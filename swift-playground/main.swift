@@ -25,7 +25,13 @@ let req = NSURLRequest(URL: url!)
 var resp:AutoreleasingUnsafeMutablePointer<NSURLResponse?> = nil
 var err:NSErrorPointer = nil
 
-let receivedData = NSURLConnection.sendSynchronousRequest(req, returningResponse: resp, error: err)
+if let receivedData = NSURLConnection.sendSynchronousRequest(req, returningResponse: resp, error: err) {
 
-let str = NSString(data: receivedData!, encoding: NSUTF8StringEncoding)
-println(str)
+    //let str = NSString(data: receivedData, encoding: NSUTF8StringEncoding)
+    let json = JSON(data:receivedData)
+    println(json.toString(pretty: true))
+}
+
+
+
+
