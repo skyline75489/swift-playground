@@ -26,10 +26,18 @@ var resp:AutoreleasingUnsafeMutablePointer<NSURLResponse?> = nil
 var err:NSErrorPointer = nil
 
 if let receivedData = NSURLConnection.sendSynchronousRequest(req, returningResponse: resp, error: err) {
-
+    
+    // Optional(String)
     //let str = NSString(data: receivedData, encoding: NSUTF8StringEncoding)
+    
+    // JSON Object
     let json = JSON(data:receivedData)
-    println(json.toString(pretty: true))
+    //println(json.toString(pretty: true))
+    
+    // subscript(key:String) -> JSON
+    let a = json["headers"]
+    println("Type of A is \(a.type)")
+    println(a.toString(pretty: true))
 }
 
 
