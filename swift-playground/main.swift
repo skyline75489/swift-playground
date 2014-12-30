@@ -20,7 +20,10 @@ class MyNSURLConnectionDelegate: NSObject, NSURLConnectionDataDelegate {
     }
 }
 
-let url = NSURL(string: "http://httpbin.org/get")
+var paraList:[String] = ["id=1", "category=4", "answer=hello"]
+var payload: String = "&".join(paraList)
+
+let url = NSURL(string: "http://httpbin.org/get?" + payload)
 let req = NSURLRequest(URL: url!)
 var resp:AutoreleasingUnsafeMutablePointer<NSURLResponse?> = nil
 var err:NSErrorPointer = nil
@@ -32,8 +35,8 @@ if let receivedData = NSURLConnection.sendSynchronousRequest(req, returningRespo
     
     // JSON Object
     let json = JSON(data:receivedData)
-    //println(json.toString(pretty: true))
-    
+    println(json.toString(pretty: true))
+    println("The Headers:")
     // subscript(key:String) -> JSON
     let a = json["headers"]
     println("Type of A is \(a.type)")
