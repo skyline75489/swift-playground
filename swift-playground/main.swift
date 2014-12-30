@@ -21,6 +21,7 @@ class MyNSURLConnectionDelegate: NSObject, NSURLConnectionDataDelegate {
 }
 
 var paraList:[String] = ["id=1", "category=4", "answer=hello"]
+paraList.append("type=67")
 var payload: String = "&".join(paraList)
 
 let url = NSURL(string: "http://httpbin.org/get?" + payload)
@@ -35,12 +36,13 @@ if let receivedData = NSURLConnection.sendSynchronousRequest(req, returningRespo
     
     // JSON Object
     let json = JSON(data:receivedData)
-    println(json.toString(pretty: true))
+    let args = json["args"]
+    println("The Arguments:")
+    println(args.toString(pretty: true))
     println("The Headers:")
     // subscript(key:String) -> JSON
-    let a = json["headers"]
-    println("Type of A is \(a.type)")
-    println(a.toString(pretty: true))
+    let headers = json["headers"]
+    println(headers.toString(pretty: true))
 }
 
 
