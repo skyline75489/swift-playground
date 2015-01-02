@@ -20,9 +20,15 @@ class MyNSURLConnectionDelegate: NSObject, NSURLConnectionDataDelegate {
     }
 }
 
-var paraList:[String] = ["id=1", "category=4", "answer=hello"]
-paraList.append("type=67")
-var payload: String = "&".join(paraList)
+var payload:String
+var paraList = [String]()
+var paraDict:[String:String] = ["id":"1", "category":"4", "answer":"hello", "type": "56"]
+
+for (key, val) in paraDict {
+    paraList.append(key + "=" + val)
+}
+
+payload = "&".join(paraList)
 
 let url = NSURL(string: "http://httpbin.org/get?" + payload)
 let req = NSURLRequest(URL: url!)
