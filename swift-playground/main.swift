@@ -20,35 +20,39 @@ class MyNSURLConnectionDelegate: NSObject, NSURLConnectionDataDelegate {
     }
 }
 
-var payload:String
-var paraList = [String]()
-var paraDict:[String:String] = ["id":"1", "category":"4", "answer":"hello", "type": "56"]
 
-for (key, val) in paraDict {
-    paraList.append(key + "=" + val)
+func GET(url:String, payload:[String:String]) -> JSON? {
+    var paraList = [String]()
+    for (key, val) in payload {
+        paraList.append(key + "=" + val)
+    }
+    let payload: String = "&".join(paraList)
+    var req_url_str:String = url
+    if !url.hasSuffix("?") {
+        req_url_str += "?" + payload
+    } else {
+        req_url_str += payload
+    }
+    let req_url = NSURL(string: req_url_str)
+
+    let req = NSURLRequest(URL: req_url!)
+    var resp: AutoreleasingUnsafeMutablePointer<NSURLResponse?> = nil
+    var err: NSErrorPointer = nil
+
+    if let receivedData = NSURLConnection.sendSynchronousRequest(req, returningResponse: resp, error: err) {
+        let json = JSON(data: receivedData)
+        return json
+    } else {
+        return nil
+    }
 }
 
-payload = "&".join(paraList)
+var paraDict:[String:String] = ["id":"1", "category":"4", "answer":"hello", "type": "56"]
 
-let url = NSURL(string: "http://httpbin.org/get?" + payload)
-let req = NSURLRequest(URL: url!)
-var resp:AutoreleasingUnsafeMutablePointer<NSURLResponse?> = nil
-var err:NSErrorPointer = nil
-
-if let receivedData = NSURLConnection.sendSynchronousRequest(req, returningResponse: resp, error: err) {
-    
-    // Optional(String)
-    //let str = NSString(data: receivedData, encoding: NSUTF8StringEncoding)
-    
-    // JSON Object
-    let json = JSON(data:receivedData)
-    let args = json["args"]
-    println("The Arguments:")
-    println(args.toString(pretty: true))
-    println("The Headers:")
-    // subscript(key:String) -> JSON
-    let headers = json["headers"]
-    println(headers.toString(pretty: true))
+if let json = GET("http://httpbin.org/get", paraDict) {
+    println(json.toString(pretty:true))
+} else {
+    println("Network Error.")
 }
 
 
