@@ -21,21 +21,44 @@ class MyNSURLConnectionDelegate: NSObject, NSURLConnectionDataDelegate {
 }
 
 
-func GET(url:String, payload:[String:String]) -> JSON? {
+func GET(url: String, payload: [String:String]) -> JSON? {
     var paraList = [String]()
     for (key, val) in payload {
         paraList.append(key + "=" + val)
     }
     let payload: String = "&".join(paraList)
-    var req_url_str:String = url
+    var reqURLString:String = url
     if !url.hasSuffix("?") {
-        req_url_str += "?" + payload
+        reqURLString += "?" + payload
     } else {
-        req_url_str += payload
+        reqURLString += payload
     }
-    let req_url = NSURL(string: req_url_str)
+    let reqURL = NSURL(string: reqURLString)
 
-    let req = NSURLRequest(URL: req_url!)
+    let req = NSURLRequest(URL: reqURL!)
+    var resp: AutoreleasingUnsafeMutablePointer<NSURLResponse?> = nil
+    var err: NSErrorPointer = nil
+
+    if let receivedData = NSURLConnection.sendSynchronousRequest(req, returningResponse: resp, error: err) {
+        let json = JSON(data: receivedData)
+        return json
+    } else {
+        return nil
+    }
+}
+
+func POST(url: String, payload: [String: String]) -> JSON? {
+    var paraList = [String]()
+    for (key, val) in payload {
+        paraList.append(key + "=" + val)
+    }
+    let reqURL = NSURL(string: url)
+    let payload: String = "&".join(paraList)
+    
+    var req = NSMutableURLRequest(URL: reqURL!)
+    req.HTTPMethod = "POST"
+    req.HTTPBody = payload.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+    
     var resp: AutoreleasingUnsafeMutablePointer<NSURLResponse?> = nil
     var err: NSErrorPointer = nil
 
@@ -49,12 +72,22 @@ func GET(url:String, payload:[String:String]) -> JSON? {
 
 var paraDict:[String:String] = ["id":"1", "category":"4", "answer":"hello", "type": "56"]
 
+// GET
+
+/*
 if let json = GET("http://httpbin.org/get", paraDict) {
-    println(json.toString(pretty:true))
+    println(json.toString(pretty: true))
 } else {
     println("Network Error.")
 }
+*/
 
+// POST
+if let json = POST("http://httpbin.org/post", paraDict) {
+    println(json.toString(pretty: true))
+} else {
+    println("Network Error.")
+}
 
 
 
