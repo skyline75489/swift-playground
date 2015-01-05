@@ -44,6 +44,10 @@ class Matches  {
         }
     }
     func group(index:Int) -> String? {
+        // Index out of bound
+        if index > count + 1 {
+            return nil
+        }
         let matches = _m as [NSTextCheckingResult]
         for match in matches  {
             let range = match.rangeAtIndex(index)
