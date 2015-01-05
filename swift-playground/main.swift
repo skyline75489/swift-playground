@@ -90,4 +90,9 @@ if let json = POST("http://httpbin.org/post", paraDict) {
 }
 
 
+let heading = Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)")
+if let m = heading.match("# Hello") {
+    println(m.group(1))
+}
+
 
