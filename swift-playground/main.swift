@@ -9,6 +9,7 @@
 import Foundation
 
 
+/*
 var params:[String:String] = ["id":"1", "category":"4", "answer":"hello", "type": "56"]
 
 // GET
@@ -28,17 +29,31 @@ if let receivedData = Requests.post("http://httpbin.org/post", payload:params) {
 } else {
     println("Network Error.")
 }
+*/
 
 let heading = Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)")
-var text:String = "# Hello\n## Hello"
+
+var text:String = "# Hello\n## Hello \n###Hi"
+var tokens:[TokenBase] = [TokenBase]()
 
 while !text.isEmpty {
     if let m = heading.match(text) {
-        if let g = m.group(0) {
-            text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex, countElements(g))))
-            println("Find")
-            println(g)
+        var _level = 1;
+        var _text = ""
+        if let g0 = m.group(0) {
+            text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex, countElements(g0))))
         }
+        if let g1 = m.group(1) {
+            _level = countElements(g1)
+        }
+        if let g2 = m.group(2) {
+            _text = g2
+        }
+        let h = Heading(text: _text, level: _level)
+        tokens.append(h)
     }
 }
 
+for token in tokens {
+    println(token.render())
+}

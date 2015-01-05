@@ -9,30 +9,28 @@
 import Foundation
 
 class Regex {
-    var _re:NSRegularExpression?
-    var _pattern:String {
-        willSet {
-            _re = NSRegularExpression(pattern: _pattern, options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
-        }
-    }
-    var _matches:Matches?
+    private var _re:NSRegularExpression?
+    private var _pattern:String
+    var _matches:RegexMatch?
+    var _error:NSError?
     
     init(pattern:String) {
         _pattern = pattern
-        _re = NSRegularExpression(pattern: _pattern, options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
+        _re = NSRegularExpression(pattern: _pattern, options: NSRegularExpressionOptions.CaseInsensitive, error: &_error)
     }
     
-    func match(str:String) -> Matches? {
+    func match(str:String) -> RegexMatch? {
         if let re = _re {
-            _matches = Matches(str:str, matches: re.matchesInString(str, options: NSMatchingOptions.ReportProgress, range: NSMakeRange(0, countElements(str))))
+            _matches = RegexMatch(str:str, matches: re.matchesInString(str, options: NSMatchingOptions.ReportProgress, range: NSMakeRange(0, countElements(str))))
             return _matches
         }
         return nil
     }
 }
 
-class Matches  {
-    var _m:[AnyObject]?
+class RegexMatch  {
+    private var _m:[AnyObject]?
+    private var matchedStriing = [String]()
     var _str:String // String to match against
     var count:Int = 0
     
@@ -41,6 +39,16 @@ class Matches  {
         if let _matches = matches {
             _m = _matches
             count = _matches.count
+            let matches = _m as [NSTextCheckingResult]
+            for match in matches  {
+                for i in 0..<match.numberOfRanges {
+                    let range = match.rangeAtIndex(i)
+                    let start = advance(_str.startIndex, range.location)
+                    let end = advance(start, range.length)
+                    let r = _str.substringWithRange(Range<String.Index>(start: start, end: end))
+                    matchedStriing.append(r)
+                }
+            }
         }
     }
     func group(index:Int) -> String? {
@@ -48,14 +56,6 @@ class Matches  {
         if index > count + 1 {
             return nil
         }
-        let matches = _m as [NSTextCheckingResult]
-        for match in matches  {
-            let range = match.rangeAtIndex(index)
-            let start = advance(_str.startIndex, range.location)
-            let end = advance(start, range.length)
-            let r = _str.substringWithRange(Range<String.Index>(start: start, end: end))
-            return r
-        }
-        return nil
+        return matchedStriing[index]
     }
 }
