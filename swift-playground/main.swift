@@ -34,67 +34,79 @@ if let receivedData = Requests.post("http://httpbin.org/post", payload:params) {
 
 class BlockParser {
     var tokens:[TokenBase] = [TokenBase]()
+    let newline = Regex(pattern: "^\n+")
     let heading = Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)")
     let lheading = Regex(pattern: "^([^\n]+)\n *(=|-)+ *(?:\n+|$)")
     let fences = Regex(pattern: "^ *(`{3,}|~{3,}) *(\\S+)? *\n([\\s\\S]+?)\\s\\1 *(?:\\n+|$)")
     let blockCode = Regex(pattern: "^( {4}[^\n]+\n*)+")
+    let hrule = Regex(pattern: "^ {0,3}[-*_](?: *[-*_]){2,} *(?:\n+|$)")
+    let blockQuote = Regex(pattern: "^( *>[^\n]+(\n[^\n]+)*\n*)+")
     
     func parse(var text:String) -> [TokenBase]{
-        func forward(previous:String) {
-            text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex, countElements(previous))))
+        func forward(length:Int) {
+            text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex,length)))
         }
         while !text.isEmpty {
-            var g0 = ""
-            if let m = heading.match(text) {
-                parseHeading(m)
-                forward(m.group(0))
-                continue
-            }
-            if let m = fences.match(text) {
-                parseFences(m)
-                forward(m.group(0))
-                continue
-            }
-            if let m = blockCode.match(text) {
-                parseBlockCode(m)
-                forward(m.group(0))
-                continue
-            }
-            if let m = lheading.match(text) {
-                parseLHeading(m)
-                forward(m.group(0))
-                continue
-            }
-            // In case of infinite loop
-            break
+            let token = getNextToken(text)
+            tokens.append(token.token)
+            forward(token.length)
         }
         return tokens
     }
     
-    func parseHeading(m: RegexMatch) {
-        let token = Heading(text: m.group(2), level: countElements(m.group(1)))
-        tokens.append(token)
+    func getNextToken(text:String) -> (token:TokenBase, length:Int) {
+        if let m = heading.match(text) {
+            return (parseHeading(m), countElements(m.group(0)))
+        }
+        if let m = lheading.match(text) {
+            return (parseLHeading(m), countElements(m.group(0)))
+        }
+        if let m = fences.match(text) {
+            return (parseFences(m), countElements(m.group(0)))
+        }
+        if let m = blockCode.match(text) {
+            return (parseBlockCode(m), countElements(m.group(0)))
+        }
+        if let m = hrule.match(text) {
+            return (parseHRule(m), countElements(m.group(0)))
+        }
+        if let m = newline.match(text) {
+            return (parseNewline(m), countElements(m.group(0)))
+        }
+        return (TokenNone(), 0)
     }
     
-    func parseLHeading(m: RegexMatch) {
+    func parseNewline(m: RegexMatch) -> TokenBase {
+        let length = countElements(m.group(0))
+        if length > 1 {
+            return NewLine()
+        }
+        return TokenNone()
+    }
+    func parseHeading(m: RegexMatch) -> TokenBase {
+        return Heading(text: m.group(2), level: countElements(m.group(1)))
+    }
+    
+    func parseLHeading(m: RegexMatch) -> TokenBase {
         let level = m.group(2) == "=" ? 1 : 2;
-        let token = Heading(text: m.group(1), level: level)
-        tokens.append(token)
+        return Heading(text: m.group(1), level: level)
     }
     
-    func parseFences(m: RegexMatch) {
-        let token = BlockCode(text: m.group(3), lang: m.group(2))
-        tokens.append(token)
+    func parseFences(m: RegexMatch) -> TokenBase {
+        return BlockCode(text: m.group(3), lang: m.group(2))
     }
     
-    func parseBlockCode(m: RegexMatch) {
+    func parseBlockCode(m: RegexMatch) -> TokenBase {
         var code = m.group(0)
         let pattern = Regex(pattern: "^ {4}")
         if let match = pattern.match(code) {
             code.removeRange(match.range())
         }
-        let token = BlockCode(text: code, lang: "")
-        tokens.append(token)
+        return BlockCode(text: code, lang: "")
+    }
+    
+    func parseHRule(m: RegexMatch) -> TokenBase {
+        return HRule()
     }
 }
 

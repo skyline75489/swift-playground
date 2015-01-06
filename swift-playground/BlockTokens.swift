@@ -20,7 +20,26 @@ class TokenBase {
     }
 }
 
-class Heading:TokenBase {
+class TokenNone: TokenBase {
+    init() {
+        super.init(type:"", text:"")
+    }
+    override func render() -> String {
+        return ""
+    }
+}
+
+class NewLine: TokenBase {
+    init() {
+        super.init(type: "newling", text: "")
+    }
+    
+    override func render() -> String {
+        return ""
+    }
+}
+
+class Heading: TokenBase {
     var level:Int = 1
     init (text:String, level:Int) {
         super.init(type: "heading", text: text)
@@ -31,7 +50,7 @@ class Heading:TokenBase {
     }
 }
 
-class BlockCode:TokenBase {
+class BlockCode: TokenBase {
     var lang = String()
     init (text:String, lang:String) {
         super.init(type: "code", text: text)
@@ -43,4 +62,17 @@ class BlockCode:TokenBase {
         }
         return "<pre><code class=\"lang-\(lang)\">\(text)\n</code></pre>\n"
     }
+}
+
+class HRule: TokenBase {
+    init() {
+        super.init(type: "hrule", text: "")
+    }
+    override func render() -> String {
+        return "<hr>\n"
+    }
+}
+
+class BlockQuote: TokenBase {
+    
 }
