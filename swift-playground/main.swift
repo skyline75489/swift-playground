@@ -32,7 +32,11 @@ if let receivedData = Requests.post("http://httpbin.org/post", payload:params) {
 */
 
 class BlockParser {
+    var definedLinks = [String:[String:String]]()
+    
     var tokens:[TokenBase] = [TokenBase]()
+    let defLinks = Regex(pattern: "^ *\\[([^^\\]]+)\\]: *<?([^\\s>]+)>?(?: +[\"(]([^\n]+)[\")])? *(?:\n+|$)")
+    let defFootnotes = Regex(pattern:"^\\[\\^([^\\]]+)\\]: *([^\n]*(?:\n+|$)(?: {1,}[^\n]*(?:\n+|$))*)")
     let newline = Regex(pattern: "^\n+")
     let heading = Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)")
     let lheading = Regex(pattern: "^([^\n]+)\n *(=|-)+ *(?:\n+|$)")
@@ -75,6 +79,10 @@ class BlockParser {
         }
         if let m = blockQuote.match(text) {
             return (parseBlockQuote(m), countElements(m.group(0)))
+        }
+        if let m = defLinks.match(text) {
+            parseDefLinks(m)
+            return (TokenNone(), countElements(m.group(0)))
         }
         return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
     }
@@ -121,6 +129,8 @@ class BlockParser {
         var previousIndex = 0
         var newCap = ""
         
+        // NSRegularExpressoin doesn't support replacement in multilines
+        // We have to manually split the captured String into multiple lines
         let lines = cap.componentsSeparatedByString("\n")
         for (index, var everyMatch) in enumerate(lines) {
             if let match = pattern.match(everyMatch) {
@@ -130,6 +140,14 @@ class BlockParser {
         }
         self.parse(newCap)
         return BlockQuote(type: "blockQuoteEnd", text: "")
+    }
+    
+    func parseDefLinks(m: RegexMatch) {
+        let key = m.group(1)
+        definedLinks[key] = [
+            "link": m.group(2),
+            "title": m.matchedString.count > 3 ? m.group(3) : ""
+        ]
     }
 }
 
