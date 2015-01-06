@@ -44,6 +44,7 @@ class BlockParser {
     let blockCode = Regex(pattern: "^( {4}[^\n]+\n*)+")
     let hrule = Regex(pattern: "^ {0,3}[-*_](?: *[-*_]){2,} *(?:\n+|$)")
     let blockQuote = Regex(pattern: "^( *>[^\n]+(\n[^\n]+)*\n*)+")
+    let text = Regex(pattern: "^[^\n]+")
     
     func forward(inout text:String, length:Int) {
         text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex,length)))
@@ -83,6 +84,9 @@ class BlockParser {
         if let m = defLinks.match(text) {
             parseDefLinks(m)
             return (TokenNone(), countElements(m.group(0)))
+        }
+        if let m = self.text.match(text) {
+            return (parseText(m), countElements(m.group(0)))
         }
         return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
     }
@@ -148,6 +152,10 @@ class BlockParser {
             "link": m.group(2),
             "title": m.matchedString.count > 3 ? m.group(3) : ""
         ]
+    }
+    
+    func parseText(m: RegexMatch) -> TokenBase {
+        return TokenBase(type: "text", text: m.group(0))
     }
 }
 
