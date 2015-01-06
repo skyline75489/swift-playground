@@ -31,7 +31,7 @@ class TokenNone: TokenBase {
 
 class NewLine: TokenBase {
     init() {
-        super.init(type: "newling", text: "")
+        super.init(type: "newline", text: "")
     }
     
     override func render() -> String {
@@ -73,6 +73,16 @@ class HRule: TokenBase {
     }
 }
 
+
 class BlockQuote: TokenBase {
-    
+    override init(type:String, text:String) {
+        super.init(type: type, text: text)
+    }
+    override func render() -> String {
+        if type == "blockQuoteStart" {
+            return "<blockquote>"
+        } else {
+            return "\n</blockquote>\n"
+        }
+    }
 }

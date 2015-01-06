@@ -49,8 +49,8 @@ class RegexMatch  {
     var matchedString = [String]()
     var _str:String // String to match against
     var count:Int = 0
-    var start:String.Index = String().startIndex
-    var end:String.Index = String().endIndex
+    var start:[String.Index] = []
+    var end:[String.Index] = []
     
     init(str:String, matches:[AnyObject]?) {
         _str = str
@@ -58,14 +58,16 @@ class RegexMatch  {
             _m = _matches
             count = _matches.count
             let matches = _m as [NSTextCheckingResult]
-            // We assume there is only one match(the first match)
             for match in matches  {
                 count = match.numberOfRanges
                 for i in 0..<match.numberOfRanges {
                     let range = match.rangeAtIndex(i)
-                    start = advance(_str.startIndex, range.location)
-                    end = advance(start, range.length)
-                    let r = _str.substringWithRange(Range<String.Index>(start: start, end: end))
+                    if range.location > countElements(_str) {
+                        break;
+                    }
+                    start.append(advance(_str.startIndex, range.location))
+                    end.append(advance(start[i], range.length))
+                    let r = _str.substringWithRange(Range<String.Index>(start: start[i], end: end[i]))
                     matchedString.append(r)
                 }
             }
@@ -73,9 +75,13 @@ class RegexMatch  {
     }
     
     func range() -> Range<String.Index> {
-        return Range<String.Index>(start: self.start, end: self.end)
+        return Range<String.Index>(start: self.start[0], end: self.end[0])
     }
     
+    func range(index:Int) -> Range<String.Index> {
+        return Range<String.Index>(start: self.start[index], end: self.end[index])
+    }
+
     func group(index:Int) -> String {
         // Index out of bound
         if index > count + 1 {

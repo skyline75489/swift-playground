@@ -31,7 +31,6 @@ if let receivedData = Requests.post("http://httpbin.org/post", payload:params) {
 }
 */
 
-
 class BlockParser {
     var tokens:[TokenBase] = [TokenBase]()
     let newline = Regex(pattern: "^\n+")
@@ -42,19 +41,23 @@ class BlockParser {
     let hrule = Regex(pattern: "^ {0,3}[-*_](?: *[-*_]){2,} *(?:\n+|$)")
     let blockQuote = Regex(pattern: "^( *>[^\n]+(\n[^\n]+)*\n*)+")
     
+    func forward(inout text:String, length:Int) {
+        text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex,length)))
+    }
+    
     func parse(var text:String) -> [TokenBase]{
-        func forward(length:Int) {
-            text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex,length)))
-        }
         while !text.isEmpty {
             let token = getNextToken(text)
             tokens.append(token.token)
-            forward(token.length)
+            forward(&text, length:token.length)
         }
         return tokens
     }
     
     func getNextToken(text:String) -> (token:TokenBase, length:Int) {
+        if let m = newline.match(text) {
+            return (parseNewline(m), countElements(m.group(0)))
+        }
         if let m = heading.match(text) {
             return (parseHeading(m), countElements(m.group(0)))
         }
@@ -70,10 +73,10 @@ class BlockParser {
         if let m = hrule.match(text) {
             return (parseHRule(m), countElements(m.group(0)))
         }
-        if let m = newline.match(text) {
-            return (parseNewline(m), countElements(m.group(0)))
+        if let m = blockQuote.match(text) {
+            return (parseBlockQuote(m), countElements(m.group(0)))
         }
-        return (TokenNone(), 0)
+        return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
     }
     
     func parseNewline(m: RegexMatch) -> TokenBase {
@@ -97,7 +100,7 @@ class BlockParser {
     }
     
     func parseBlockCode(m: RegexMatch) -> TokenBase {
-        var code = m.group(0)
+        var code = String(m.group(0))
         let pattern = Regex(pattern: "^ {4}")
         if let match = pattern.match(code) {
             code.removeRange(match.range())
@@ -107,6 +110,26 @@ class BlockParser {
     
     func parseHRule(m: RegexMatch) -> TokenBase {
         return HRule()
+    }
+    
+    func parseBlockQuote(m: RegexMatch) -> TokenBase {
+        let start = BlockQuote(type: "blockQuoteStart", text: "")
+        tokens.append(start)
+        var cap = m.group(0)
+        
+        let pattern = Regex(pattern: "^ *> ?")
+        var previousIndex = 0
+        var newCap = ""
+        
+        let lines = cap.componentsSeparatedByString("\n")
+        for (index, var everyMatch) in enumerate(lines) {
+            if let match = pattern.match(everyMatch) {
+                everyMatch.removeRange(match.range())
+                newCap += everyMatch + "\n"
+            }
+        }
+        self.parse(newCap)
+        return BlockQuote(type: "blockQuoteEnd", text: "")
     }
 }
 
