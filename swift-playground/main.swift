@@ -186,6 +186,7 @@ class InlineParser {
     
     init() {
         addGrammar("refLinks", regex: Regex(pattern: "^!?\\[((?:\\[[^^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*)\\]\\s*\\[([^^\\]]*)\\]"))
+        addGrammar("code", regex: Regex(pattern: "^(`+)\\s*(.*?[^`])\\s*\\1(?!`)"))
         addGrammar("text", regex: Regex(pattern: "^[\\s\\S]+?(?=[\\\\<!\\[_*`~]|https?://| {2,}\n|$)"))
     }
     
@@ -213,6 +214,8 @@ class InlineParser {
         switch name {
         case "refLinks":
             return outputRefLink
+        case "code":
+            return outputCode
         case "text":
             return outputText
         default:
@@ -249,6 +252,9 @@ class InlineParser {
         return Link(title: title, link: link, text: text)
     }
     
+    func outputCode(m: RegexMatch) -> TokenBase {
+        return InlineCode(text: m.group(2))
+    }
     func outputText(m: RegexMatch) -> TokenBase {
         return TokenBase(type: "text", text: m.group(0))
     }

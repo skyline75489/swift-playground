@@ -10,9 +10,8 @@ import Foundation
 
 class InlineCode: TokenBase {
     var lang = ""
-    init (text:String, lang:String) {
+    init (text:String) {
         super.init(type: "code", text: text)
-        self.lang = lang
     }
     override func render() -> String {
         return "<code>\(text)</code>"
