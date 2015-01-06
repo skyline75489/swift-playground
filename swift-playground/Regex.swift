@@ -8,11 +8,16 @@
 
 import Foundation
 
-class Regex {
+class Regex : Hashable, Equatable{
     private var _re:NSRegularExpression?
     var _pattern:String
     var _matches:RegexMatch?
     var _error:NSError?
+    var hashValue: Int {
+        get {
+            return self._pattern.hash
+        }
+    }
     
     init(pattern:String) {
         _pattern = pattern
@@ -31,7 +36,13 @@ class Regex {
         }
         return nil
     }
+    
 }
+
+func == (lhs: Regex, rhs: Regex) -> Bool {
+    return lhs._pattern == rhs._pattern
+}
+
 
 class RegexMatch  {
     private var _m:[AnyObject]?
