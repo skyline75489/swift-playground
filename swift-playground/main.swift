@@ -33,18 +33,27 @@ if let receivedData = Requests.post("http://httpbin.org/post", payload:params) {
 
 class BlockParser {
     var definedLinks = [String:[String:String]]()
+    var tokens = [TokenBase]()
+    var grammarNameMap = [Regex:String]()
+    var grammarList = [Regex]()
     
-    var tokens:[TokenBase] = [TokenBase]()
-    let defLinks = Regex(pattern: "^ *\\[([^^\\]]+)\\]: *<?([^\\s>]+)>?(?: +[\"(]([^\n]+)[\")])? *(?:\n+|$)")
-    let defFootnotes = Regex(pattern:"^\\[\\^([^\\]]+)\\]: *([^\n]*(?:\n+|$)(?: {1,}[^\n]*(?:\n+|$))*)")
-    let newline = Regex(pattern: "^\n+")
-    let heading = Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)")
-    let lheading = Regex(pattern: "^([^\n]+)\n *(=|-)+ *(?:\n+|$)")
-    let fences = Regex(pattern: "^ *(`{3,}|~{3,}) *(\\S+)? *\n([\\s\\S]+?)\\s\\1 *(?:\\n+|$)")
-    let blockCode = Regex(pattern: "^( {4}[^\n]+\n*)+")
-    let hrule = Regex(pattern: "^ {0,3}[-*_](?: *[-*_]){2,} *(?:\n+|$)")
-    let blockQuote = Regex(pattern: "^( *>[^\n]+(\n[^\n]+)*\n*)+")
-    let text = Regex(pattern: "^[^\n]+")
+    init() {
+        addGrammar("defLinks", regex: Regex(pattern:"^ *\\[([^^\\]]+)\\]: *<?([^\\s>]+)>?(?: +[\"(]([^\n]+)[\")])? *(?:\n+|$)"))
+        addGrammar("defFootnotes", regex: Regex(pattern:"^\\[\\^([^\\]]+)\\]: *([^\n]*(?:\n+|$)(?: {1,}[^\n]*(?:\n+|$))*)"))
+        addGrammar("newline", regex: Regex(pattern: "^\n+"))
+        addGrammar("heading", regex: Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)"))
+        addGrammar("lheading", regex: Regex(pattern: "^([^\n]+)\n *(=|-)+ *(?:\n+|$)"))
+        addGrammar("fences", regex: Regex(pattern: "^ *(`{3,}|~{3,}) *(\\S+)? *\n([\\s\\S]+?)\\s\\1 *(?:\\n+|$)"))
+        addGrammar("blockCode", regex: Regex(pattern: "^( {4}[^\n]+\n*)+"))
+        addGrammar("hrule", regex: Regex(pattern: "^ {0,3}[-*_](?: *[-*_]){2,} *(?:\n+|$)"))
+        addGrammar("blockQuote", regex: Regex(pattern: "^( *>[^\n]+(\n[^\n]+)*\n*)+"))
+        addGrammar("text", regex: Regex(pattern: "^[^\n]+"))
+    }
+    
+    func addGrammar(name:String, regex:Regex) {
+        grammarNameMap[regex] = name
+        grammarList.append(regex)
+    }
     
     func forward(inout text:String, length:Int) {
         text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex,length)))
@@ -59,34 +68,45 @@ class BlockParser {
         return tokens
     }
     
+    func chooseParseFunctionForGrammar(name:String) -> (RegexMatch) -> TokenBase {
+        switch name {
+        case "newline":
+            return parseNewline
+        case "heading":
+            return parseHeading
+        case "lheading":
+            return parseLHeading
+        case "fences":
+            return parseFences
+        case "blockCode":
+            return parseBlockCode
+        case "hrule":
+            return parseHRule
+        case "blockQuote":
+            return parseBlockQuote
+        case "text":
+            return parseText
+        default:
+            return parseText
+        }
+    }
+    
     func getNextToken(text:String) -> (token:TokenBase, length:Int) {
-        if let m = newline.match(text) {
-            return (parseNewline(m), countElements(m.group(0)))
-        }
-        if let m = heading.match(text) {
-            return (parseHeading(m), countElements(m.group(0)))
-        }
-        if let m = lheading.match(text) {
-            return (parseLHeading(m), countElements(m.group(0)))
-        }
-        if let m = fences.match(text) {
-            return (parseFences(m), countElements(m.group(0)))
-        }
-        if let m = blockCode.match(text) {
-            return (parseBlockCode(m), countElements(m.group(0)))
-        }
-        if let m = hrule.match(text) {
-            return (parseHRule(m), countElements(m.group(0)))
-        }
-        if let m = blockQuote.match(text) {
-            return (parseBlockQuote(m), countElements(m.group(0)))
-        }
-        if let m = defLinks.match(text) {
-            parseDefLinks(m)
-            return (TokenNone(), countElements(m.group(0)))
-        }
-        if let m = self.text.match(text) {
-            return (parseText(m), countElements(m.group(0)))
+        for regex in grammarList {
+            if let m = regex.match(text) {
+                let name = grammarNameMap[regex]! // Name won't be nil
+                let forwardLength = countElements(m.group(0))
+                
+                // Special case
+                if name == "defLinks" {
+                    parseDefLinks(m)
+                    return (TokenNone(), forwardLength)
+                }
+                
+                let parseFunction = chooseParseFunctionForGrammar(name)
+                let tokenResult = parseFunction(m)
+                return (tokenResult, forwardLength)
+            }
         }
         return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
     }
