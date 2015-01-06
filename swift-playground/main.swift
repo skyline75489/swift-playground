@@ -179,12 +179,91 @@ class BlockParser {
     }
 }
 
+class InlineParser {
+    var links = [String:[String:String]]()
+    var grammarNameMap = [Regex:String]()
+    var grammarList = [Regex]()
+    
+    init() {
+        addGrammar("refLinks", regex: Regex(pattern: "^!?\\[((?:\\[[^^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*)\\]\\s*\\[([^^\\]]*)\\]"))
+        addGrammar("text", regex: Regex(pattern: "^[\\s\\S]+?(?=[\\\\<!\\[_*`~]|https?://| {2,}\n|$)"))
+    }
+    
+    func addGrammar(name:String, regex:Regex) {
+        grammarNameMap[regex] = name
+        grammarList.append(regex)
+    }
+
+    func forward(inout text:String, length:Int) {
+        text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex,length)))
+    }
+    
+    func parse(inout text:String) {
+        var result = ""
+        while !text.isEmpty {
+            let token = getNextToken(text)
+            result += token.token.render()
+            forward(&text, length:token.length)
+        }
+        text = result
+    }
+    
+    
+    func chooseOutputFunctionForGrammar(name:String) -> (RegexMatch) -> TokenBase {
+        switch name {
+        case "refLinks":
+            return outputRefLink
+        case "text":
+            return outputText
+        default:
+            return outputText
+        }
+    }
+    
+    func getNextToken(text:String) -> (token:TokenBase, length:Int) {
+        for regex in grammarList {
+            if let m = regex.match(text) {
+                let name = grammarNameMap[regex]! // Name won't be nil
+                let forwardLength = countElements(m.group(0))
+                
+                let parseFunction = chooseOutputFunctionForGrammar(name)
+                let tokenResult = parseFunction(m)
+                return (tokenResult, forwardLength)
+            }
+        }
+        return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
+    }
+
+    func outputRefLink(m: RegexMatch) -> TokenBase {
+        let key = m.group(2).isEmpty ? m.group(1) : m.group(2)
+        if let ret = links[key] {
+            return processLink(m, link: ret["link"]!, title: ret["title"]!)
+        }
+        else {
+            return TokenNone()
+        }
+    }
+    
+    func processLink(m: RegexMatch, link: String, title: String) -> TokenBase {
+        let text = m.group(1)
+        return Link(title: title, link: link, text: text)
+    }
+    
+    func outputText(m: RegexMatch) -> TokenBase {
+        return TokenBase(type: "text", text: m.group(0))
+    }
+}
+
 let blockParser = BlockParser()
+let inlineParser = InlineParser()
+
 if let dirs = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true) as?  [String] {
     let dir = dirs[0]
     let path = dir.stringByAppendingPathComponent("test.md")
     if let text = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil) {
         for token in blockParser.parse(text) {
+            inlineParser.links = blockParser.definedLinks
+            inlineParser.parse(&token.text)
             println(token.render())
         }
     }

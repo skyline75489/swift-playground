@@ -8,8 +8,8 @@
 
 import Foundation
 
-class InlineCode:TokenBase {
-    var lang = String()
+class InlineCode: TokenBase {
+    var lang = ""
     init (text:String, lang:String) {
         super.init(type: "code", text: text)
         self.lang = lang
@@ -17,4 +17,27 @@ class InlineCode:TokenBase {
     override func render() -> String {
         return "<code>\(text)</code>"
     }
+}
+
+class Link: TokenBase {
+    var link = ""
+    var title = ""
+    var fullText = ""
+    init(title:String, link:String, text:String) {
+        super.init(type: "link", text: text)
+        if link.hasPrefix("javascript") {
+            self.link = ""
+        }
+        if title.isEmpty {
+            self.fullText = "<a href=\"\(link)\">\(text)</a>"
+        } else {
+            //TODO Escape
+            self.fullText = "<a href=\"\(link)\" title=\"\(title)\">\(text)</a>"
+        }
+    }
+    
+    override func render() -> String {
+        return self.fullText
+    }
+    
 }
