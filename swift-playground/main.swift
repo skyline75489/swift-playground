@@ -35,6 +35,7 @@ if let receivedData = Requests.post("http://httpbin.org/post", payload:params) {
 class BlockParser {
     var tokens:[TokenBase] = [TokenBase]()
     let heading = Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)")
+    let lheading = Regex(pattern: "^([^\n]+)\n *(=|-)+ *(?:\n+|$)")
     let fences = Regex(pattern: "^ *(`{3,}|~{3,}) *(\\S+)? *\n([\\s\\S]+?)\\s\\1 *(?:\\n+|$)")
     let blockCode = Regex(pattern: "^( {4}[^\n]+\n*)+")
     
@@ -59,12 +60,25 @@ class BlockParser {
                 forward(m.group(0))
                 continue
             }
+            if let m = lheading.match(text) {
+                parseLHeading(m)
+                forward(m.group(0))
+                continue
+            }
+            // In case of infinite loop
+            break
         }
         return tokens
     }
     
     func parseHeading(m: RegexMatch) {
         let token = Heading(text: m.group(2), level: countElements(m.group(1)))
+        tokens.append(token)
+    }
+    
+    func parseLHeading(m: RegexMatch) {
+        let level = m.group(2) == "=" ? 1 : 2;
+        let token = Heading(text: m.group(1), level: level)
         tokens.append(token)
     }
     
@@ -84,10 +98,13 @@ class BlockParser {
     }
 }
 
-var text:String = "# Hello\n## Hello \n ### Hi \n ```python\n     def hello()\n pass \n```"
-
 let blockParser = BlockParser()
-
-for token in blockParser.parse(text) {
-    println(token.render())
+if let dirs = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true) as?  [String] {
+    let dir = dirs[0]
+    let path = dir.stringByAppendingPathComponent("test.md")
+    if let text = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil) {
+        for token in blockParser.parse(text) {
+            println(token.render())
+        }
+    }
 }
