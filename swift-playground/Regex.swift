@@ -10,7 +10,7 @@ import Foundation
 
 class Regex {
     private var _re:NSRegularExpression?
-    private var _pattern:String
+    var _pattern:String
     var _matches:RegexMatch?
     var _error:NSError?
     
@@ -22,7 +22,12 @@ class Regex {
     func match(str:String) -> RegexMatch? {
         if let re = _re {
             _matches = RegexMatch(str:str, matches: re.matchesInString(str, options: NSMatchingOptions.ReportProgress, range: NSMakeRange(0, countElements(str))))
-            return _matches
+            if _matches?.count > 0 {
+                return _matches
+            }
+            else {
+                return nil
+            }
         }
         return nil
     }
@@ -30,9 +35,11 @@ class Regex {
 
 class RegexMatch  {
     private var _m:[AnyObject]?
-    private var matchedStriing = [String]()
+    var matchedString = [String]()
     var _str:String // String to match against
     var count:Int = 0
+    var start:String.Index = String().startIndex
+    var end:String.Index = String().endIndex
     
     init(str:String, matches:[AnyObject]?) {
         _str = str
@@ -40,22 +47,29 @@ class RegexMatch  {
             _m = _matches
             count = _matches.count
             let matches = _m as [NSTextCheckingResult]
+            // We assume there is only one match(the first match)
             for match in matches  {
+                count = match.numberOfRanges
                 for i in 0..<match.numberOfRanges {
                     let range = match.rangeAtIndex(i)
-                    let start = advance(_str.startIndex, range.location)
-                    let end = advance(start, range.length)
+                    start = advance(_str.startIndex, range.location)
+                    end = advance(start, range.length)
                     let r = _str.substringWithRange(Range<String.Index>(start: start, end: end))
-                    matchedStriing.append(r)
+                    matchedString.append(r)
                 }
             }
         }
     }
-    func group(index:Int) -> String? {
+    
+    func range() -> Range<String.Index> {
+        return Range<String.Index>(start: self.start, end: self.end)
+    }
+    
+    func group(index:Int) -> String {
         // Index out of bound
         if index > count + 1 {
-            return nil
+            return ""
         }
-        return matchedStriing[index]
+        return matchedString[index]
     }
 }

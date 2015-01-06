@@ -31,29 +31,63 @@ if let receivedData = Requests.post("http://httpbin.org/post", payload:params) {
 }
 */
 
-let heading = Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)")
 
-var text:String = "# Hello\n## Hello \n###Hi"
-var tokens:[TokenBase] = [TokenBase]()
-
-while !text.isEmpty {
-    if let m = heading.match(text) {
-        var _level = 1;
-        var _text = ""
-        if let g0 = m.group(0) {
-            text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex, countElements(g0))))
+class BlockParser {
+    var tokens:[TokenBase] = [TokenBase]()
+    let heading = Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)")
+    let fences = Regex(pattern: "^ *(`{3,}|~{3,}) *(\\S+)? *\n([\\s\\S]+?)\\s\\1 *(?:\\n+|$)")
+    let blockCode = Regex(pattern: "^( {4}[^\n]+\n*)+")
+    
+    func parse(var text:String) -> [TokenBase]{
+        func forward(previous:String) {
+            text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex, countElements(previous))))
         }
-        if let g1 = m.group(1) {
-            _level = countElements(g1)
+        while !text.isEmpty {
+            var g0 = ""
+            if let m = heading.match(text) {
+                parseHeading(m)
+                forward(m.group(0))
+                continue
+            }
+            if let m = fences.match(text) {
+                parseFences(m)
+                forward(m.group(0))
+                continue
+            }
+            if let m = blockCode.match(text) {
+                parseBlockCode(m)
+                forward(m.group(0))
+                continue
+            }
         }
-        if let g2 = m.group(2) {
-            _text = g2
+        return tokens
+    }
+    
+    func parseHeading(m: RegexMatch) {
+        let token = Heading(text: m.group(2), level: countElements(m.group(1)))
+        tokens.append(token)
+    }
+    
+    func parseFences(m: RegexMatch) {
+        let token = BlockCode(text: m.group(3), lang: m.group(2))
+        tokens.append(token)
+    }
+    
+    func parseBlockCode(m: RegexMatch) {
+        var code = m.group(0)
+        let pattern = Regex(pattern: "^ {4}")
+        if let match = pattern.match(code) {
+            code.removeRange(match.range())
         }
-        let h = Heading(text: _text, level: _level)
-        tokens.append(h)
+        let token = BlockCode(text: code, lang: "")
+        tokens.append(token)
     }
 }
 
-for token in tokens {
+var text:String = "# Hello\n## Hello \n ### Hi \n ```python\n     def hello()\n pass \n```"
+
+let blockParser = BlockParser()
+
+for token in blockParser.parse(text) {
     println(token.render())
 }

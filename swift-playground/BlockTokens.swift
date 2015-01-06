@@ -30,3 +30,17 @@ class Heading:TokenBase {
         return "<h\(level)>\(text)<h\(level)>"
     }
 }
+
+class BlockCode:TokenBase {
+    var lang = String()
+    init (text:String, lang:String) {
+        super.init(type: "code", text: text)
+        self.lang = lang
+    }
+    override func render() -> String {
+        if countElements(lang) == 0 {
+            return "<pre><code>\(text)\n</code></pre>\n"
+        }
+        return "<pre><code class=\"lang-\(lang)\">\(text)\n</code></pre>\n"
+    }
+}
