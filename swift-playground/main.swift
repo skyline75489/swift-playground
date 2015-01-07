@@ -178,7 +178,10 @@ class InlineParser {
     var grammarList = [Regex]()
     
     init() {
-        addGrammar("refLinks", regex: Regex(pattern: "^!?\\[((?:\\[[^^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*)\\]\\s*\\[([^^\\]]*)\\]"))
+        addGrammar("escape", regex:Regex(pattern: "^\\\\([\\\\`*{}\\[\\]()#+\\-.!_>~|])")) // \* \+ \! ...
+        addGrammar("ref_links", regex: Regex(pattern: "^!?\\[((?:\\[[^^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*)\\]\\s*\\[([^^\\]]*)\\]"))
+        addGrammar("double_emphasis", regex: Regex(pattern: "^_{2}(.+?)_{2}(?!_)|^\\*{2}(.+?)\\*{2}(?!\\*)"))
+        addGrammar("emphasis", regex: Regex(pattern: "^\\b_((?:__|.)+?)_\\b|^\\*((?:\\*\\*|.)+?)\\*(?!\\*)"))
         addGrammar("code", regex: Regex(pattern: "^(`+)\\s*(.*?[^`])\\s*\\1(?!`)"))
         addGrammar("text", regex: Regex(pattern: "^[\\s\\S]+?(?=[\\\\<!\\[_*`~]|https?://| {2,}\n|$)"))
     }
@@ -205,8 +208,14 @@ class InlineParser {
     
     func chooseOutputFunctionForGrammar(name:String) -> (RegexMatch) -> TokenBase {
         switch name {
-        case "refLinks":
+        case "escape":
+            return outputEscape
+        case "ref_links":
             return outputRefLink
+        case "double_emphasis":
+            return outputDoubleEmphasis
+        case "emphasis":
+            return outputEmphasis
         case "code":
             return outputCode
         case "text":
@@ -230,6 +239,10 @@ class InlineParser {
         return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
     }
     
+    func outputEscape(m: RegexMatch) -> TokenBase {
+        return TokenBase(type: "text", text: m.group(1))
+    }
+    
     func outputRefLink(m: RegexMatch) -> TokenBase {
         let key = m.group(2).isEmpty ? m.group(1) : m.group(2)
         if let ret = links[key] {
@@ -245,9 +258,22 @@ class InlineParser {
         return Link(title: title, link: link, text: text)
     }
     
+    func outputDoubleEmphasis(m: RegexMatch) -> TokenBase {
+        var text = m.group(1)
+        self.parse(&text)
+        return DoubleEmphasis(text: text)
+    }
+    
+    func outputEmphasis(m: RegexMatch) -> TokenBase {
+        var text = m.group(1)
+        self.parse(&text)
+        return Emphasis(text: text)
+    }
+    
     func outputCode(m: RegexMatch) -> TokenBase {
         return InlineCode(text: m.group(2))
     }
+    
     func outputText(m: RegexMatch) -> TokenBase {
         return TokenEscapedText(type: "text", text: m.group(0))
     }
@@ -262,7 +288,7 @@ if let dirs = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.Document
     if let text = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil) {
         for token in blockParser.parse(text) {
             inlineParser.links = blockParser.definedLinks
-            if token.type == "text" {
+            if token.type == "text" || token.type == "heading" || token.type == "paragraph" {
                 inlineParser.parse(&token.text)
             }
             println(token.render())
