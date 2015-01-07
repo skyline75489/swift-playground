@@ -8,14 +8,17 @@
 
 import Foundation
 
-func escape(var text: String) -> String {
+func escape(var text: String, quote: Bool = true) -> String {
     text = text.stringByReplacingOccurrencesOfString("&", withString: "&amp;", options: NSStringCompareOptions.LiteralSearch, range: nil)
     text = text.stringByReplacingOccurrencesOfString("<", withString: "&lt;", options: NSStringCompareOptions.LiteralSearch, range: nil)
     text = text.stringByReplacingOccurrencesOfString(">", withString: "&gt;", options: NSStringCompareOptions.LiteralSearch, range: nil)
-    text = text.stringByReplacingOccurrencesOfString("\"", withString: "&quot;", options: NSStringCompareOptions.LiteralSearch, range: nil)
-    text = text.stringByReplacingOccurrencesOfString("'", withString: "&#39;", options: NSStringCompareOptions.LiteralSearch, range: nil)
+    if quote {
+        text = text.stringByReplacingOccurrencesOfString("\"", withString: "&quot;", options: NSStringCompareOptions.LiteralSearch, range: nil)
+        text = text.stringByReplacingOccurrencesOfString("'", withString: "&#39;", options: NSStringCompareOptions.LiteralSearch, range: nil)
+    }
     return text
 }
+
 
 class BlockParser {
     var definedLinks = [String:[String:String]]()
@@ -27,7 +30,7 @@ class BlockParser {
         "list_block", "block_html", "def_links",
         "def_footnotes", "table", "paragraph", "text"]
     
-    let list_rules = ["newline", "block_code", "fences", "lheading", "hrule",
+    let listRules = ["newline", "block_code", "fences", "lheading", "hrule",
         "block_quote", "list_block", "block_html", "text",]
     
     init() {
@@ -101,6 +104,7 @@ class BlockParser {
                 }
             }
         }
+        // Move one character. Otherwise may case infinate loop
         return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
     }
     
@@ -176,13 +180,18 @@ class InlineParser {
     var links = [String:[String:String]]()
     var grammarNameMap = [Regex:String]()
     var grammarList = [Regex]()
+    var inLink = false
     
     init() {
+        // Backslash escape
         addGrammar("escape", regex:Regex(pattern: "^\\\\([\\\\`*{}\\[\\]()#+\\-.!_>~|])")) // \* \+ \! ...
+        addGrammar("tag", regex: Regex(pattern: "^<!--[\\s\\S]*?-->|^<\\/\\w+>|^<\\w+[^>]*?>")) // html tag
         addGrammar("ref_links", regex: Regex(pattern: "^!?\\[((?:\\[[^^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*)\\]\\s*\\[([^^\\]]*)\\]"))
         addGrammar("double_emphasis", regex: Regex(pattern: "^_{2}(.+?)_{2}(?!_)|^\\*{2}(.+?)\\*{2}(?!\\*)"))
         addGrammar("emphasis", regex: Regex(pattern: "^\\b_((?:__|.)+?)_\\b|^\\*((?:\\*\\*|.)+?)\\*(?!\\*)"))
         addGrammar("code", regex: Regex(pattern: "^(`+)\\s*(.*?[^`])\\s*\\1(?!`)"))
+        addGrammar("linebreak", regex: Regex(pattern: "^ {2,}\\n(?!\\s*$)"))
+        addGrammar("strikethrough", regex: Regex(pattern: "^~~(?=\\S)(.*?\\S)~~"))
         addGrammar("text", regex: Regex(pattern: "^[\\s\\S]+?(?=[\\\\<!\\[_*`~]|https?://| {2,}\n|$)"))
     }
     
@@ -210,6 +219,8 @@ class InlineParser {
         switch name {
         case "escape":
             return outputEscape
+        case "tag":
+            return outputTag
         case "ref_links":
             return outputRefLink
         case "double_emphasis":
@@ -218,6 +229,10 @@ class InlineParser {
             return outputEmphasis
         case "code":
             return outputCode
+        case "linebreak":
+            return outputLineBreak
+        case "strikethrough":
+            return outputStrikeThrough
         case "text":
             return outputText
         default:
@@ -243,9 +258,23 @@ class InlineParser {
         return TokenBase(type: "text", text: m.group(1))
     }
     
+    func outputTag(m: RegexMatch) -> TokenBase {
+        var text = m.group(0)
+        let lowerText = text.lowercaseString
+        if lowerText.hasPrefix("<a ") {
+            self.inLink = true
+        }
+        if lowerText.hasPrefix("</a>") {
+            self.inLink = false
+        }
+        return TokenBase(type: "tag", text: text)
+    }
+    
     func outputRefLink(m: RegexMatch) -> TokenBase {
         let key = m.group(2).isEmpty ? m.group(1) : m.group(2)
         if let ret = links[key] {
+            // If links[key] exists, the link and title won't be nil
+            // We can safely unwrap it
             return processLink(m, link: ret["link"]!, title: ret["title"]!)
         }
         else {
@@ -272,6 +301,14 @@ class InlineParser {
     
     func outputCode(m: RegexMatch) -> TokenBase {
         return InlineCode(text: m.group(2))
+    }
+    
+    func outputLineBreak(m: RegexMatch) -> TokenBase {
+        return LineBreak()
+    }
+    
+    func outputStrikeThrough(m: RegexMatch) -> TokenBase {
+        return StrikeThrough(text: m.group(1))
     }
     
     func outputText(m: RegexMatch) -> TokenBase {
