@@ -29,6 +29,15 @@ class TokenNone: TokenBase {
     }
 }
 
+class TokenEscapedText: TokenBase {
+    override init (type:String, text:String) {
+        super.init(type: type, text: escape(text))
+    }
+    override func render() -> String {
+        return text
+    }
+}
+
 class NewLine: TokenBase {
     init() {
         super.init(type: "newline", text: "")
@@ -46,11 +55,11 @@ class Heading: TokenBase {
         self.level = level
     }
     override func render() -> String {
-        return "<h\(level)>\(text)<h\(level)>"
+        return "<h\(level)>\(text)</h\(level)>"
     }
 }
 
-class BlockCode: TokenBase {
+class BlockCode: TokenEscapedText {
     var lang = String()
     init (text:String, lang:String) {
         super.init(type: "code", text: text)
@@ -72,7 +81,6 @@ class HRule: TokenBase {
         return "<hr>\n"
     }
 }
-
 
 class BlockQuote: TokenBase {
     override init(type:String, text:String) {

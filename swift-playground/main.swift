@@ -8,51 +8,43 @@
 
 import Foundation
 
-
-/*
-var params:[String:String] = ["id":"1", "category":"4", "answer":"hello", "type": "56"]
-
-// GET
-
-if let receivedData = Requests.get("http://httpbin.org/get", payload:params) {
-    let json = JSON(data:receivedData)
-    println(json.toString(pretty: true))
-} else {
-    println("Network Error.")
+func escape(var text: String) -> String {
+    text = text.stringByReplacingOccurrencesOfString("&", withString: "&amp;", options: NSStringCompareOptions.LiteralSearch, range: nil)
+    text = text.stringByReplacingOccurrencesOfString("<", withString: "&lt;", options: NSStringCompareOptions.LiteralSearch, range: nil)
+    text = text.stringByReplacingOccurrencesOfString(">", withString: "&gt;", options: NSStringCompareOptions.LiteralSearch, range: nil)
+    text = text.stringByReplacingOccurrencesOfString("\"", withString: "&quot;", options: NSStringCompareOptions.LiteralSearch, range: nil)
+    text = text.stringByReplacingOccurrencesOfString("'", withString: "&#39;", options: NSStringCompareOptions.LiteralSearch, range: nil)
+    return text
 }
-
-// POST
-
-if let receivedData = Requests.post("http://httpbin.org/post", payload:params) {
-    let json = JSON(data:receivedData)
-    println(json.toString(pretty: true))
-} else {
-    println("Network Error.")
-}
-*/
 
 class BlockParser {
     var definedLinks = [String:[String:String]]()
     var tokens = [TokenBase]()
-    var grammarNameMap = [Regex:String]()
-    var grammarList = [Regex]()
+    var grammarRegexMap = [String:Regex]()
+    
+    let defaultRules = ["newline", "hrule", "block_code", "fences", "heading",
+        "nptable", "lheading", "block_quote",
+        "list_block", "block_html", "def_links",
+        "def_footnotes", "table", "paragraph", "text"]
+    
+    let list_rules = ["newline", "block_code", "fences", "lheading", "hrule",
+        "block_quote", "list_block", "block_html", "text",]
     
     init() {
-        addGrammar("defLinks", regex: Regex(pattern:"^ *\\[([^^\\]]+)\\]: *<?([^\\s>]+)>?(?: +[\"(]([^\n]+)[\")])? *(?:\n+|$)"))
-        addGrammar("defFootnotes", regex: Regex(pattern:"^\\[\\^([^\\]]+)\\]: *([^\n]*(?:\n+|$)(?: {1,}[^\n]*(?:\n+|$))*)"))
+        addGrammar("def_links", regex: Regex(pattern:"^ *\\[([^^\\]]+)\\]: *<?([^\\s>]+)>?(?: +[\"(]([^\n]+)[\")])? *(?:\n+|$)"))
+        addGrammar("def_footnotes", regex: Regex(pattern:"^\\[\\^([^\\]]+)\\]: *([^\n]*(?:\n+|$)(?: {1,}[^\n]*(?:\n+|$))*)"))
         addGrammar("newline", regex: Regex(pattern: "^\n+"))
         addGrammar("heading", regex: Regex(pattern: "^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)"))
         addGrammar("lheading", regex: Regex(pattern: "^([^\n]+)\n *(=|-)+ *(?:\n+|$)"))
         addGrammar("fences", regex: Regex(pattern: "^ *(`{3,}|~{3,}) *(\\S+)? *\n([\\s\\S]+?)\\s\\1 *(?:\\n+|$)"))
-        addGrammar("blockCode", regex: Regex(pattern: "^( {4}[^\n]+\n*)+"))
+        addGrammar("block_code", regex: Regex(pattern: "^( {4}[^\n]+\n*)+"))
         addGrammar("hrule", regex: Regex(pattern: "^ {0,3}[-*_](?: *[-*_]){2,} *(?:\n+|$)"))
-        addGrammar("blockQuote", regex: Regex(pattern: "^( *>[^\n]+(\n[^\n]+)*\n*)+"))
+        addGrammar("block_quote", regex: Regex(pattern: "^( *>[^\n]+(\n[^\n]+)*\n*)+"))
         addGrammar("text", regex: Regex(pattern: "^[^\n]+"))
     }
     
     func addGrammar(name:String, regex:Regex) {
-        grammarNameMap[regex] = name
-        grammarList.append(regex)
+        grammarRegexMap[name] = regex
     }
     
     func forward(inout text:String, length:Int) {
@@ -68,7 +60,7 @@ class BlockParser {
         return tokens
     }
     
-    func chooseParseFunctionForGrammar(name:String) -> (RegexMatch) -> TokenBase {
+    func chooseParseFunction(name:String) -> (RegexMatch) -> TokenBase {
         switch name {
         case "newline":
             return parseNewline
@@ -78,11 +70,11 @@ class BlockParser {
             return parseLHeading
         case "fences":
             return parseFences
-        case "blockCode":
+        case "block_code":
             return parseBlockCode
         case "hrule":
             return parseHRule
-        case "blockQuote":
+        case "block_quote":
             return parseBlockQuote
         case "text":
             return parseText
@@ -92,20 +84,21 @@ class BlockParser {
     }
     
     func getNextToken(text:String) -> (token:TokenBase, length:Int) {
-        for regex in grammarList {
-            if let m = regex.match(text) {
-                let name = grammarNameMap[regex]! // Name won't be nil
-                let forwardLength = countElements(m.group(0))
-                
-                // Special case
-                if name == "defLinks" {
-                    parseDefLinks(m)
-                    return (TokenNone(), forwardLength)
+        for rule in defaultRules {
+            if let regex  = grammarRegexMap[rule] {
+                if let m = regex.match(text) {
+                    let forwardLength = countElements(m.group(0))
+                    
+                    // Special case
+                    if rule == "def_links" {
+                        parseDefLinks(m)
+                        return (TokenNone(), forwardLength)
+                    }
+                    
+                    let parseFunction = chooseParseFunction(rule)
+                    let tokenResult = parseFunction(m)
+                    return (tokenResult, forwardLength)
                 }
-                
-                let parseFunction = chooseParseFunctionForGrammar(name)
-                let tokenResult = parseFunction(m)
-                return (tokenResult, forwardLength)
             }
         }
         return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
@@ -194,7 +187,7 @@ class InlineParser {
         grammarNameMap[regex] = name
         grammarList.append(regex)
     }
-
+    
     func forward(inout text:String, length:Int) {
         text.removeRange(Range<String.Index>(start: text.startIndex, end: advance(text.startIndex,length)))
     }
@@ -236,7 +229,7 @@ class InlineParser {
         }
         return (TokenBase(type: " ", text: text.substringToIndex(advance(text.startIndex, 1))) , 1)
     }
-
+    
     func outputRefLink(m: RegexMatch) -> TokenBase {
         let key = m.group(2).isEmpty ? m.group(1) : m.group(2)
         if let ret = links[key] {
@@ -256,7 +249,7 @@ class InlineParser {
         return InlineCode(text: m.group(2))
     }
     func outputText(m: RegexMatch) -> TokenBase {
-        return TokenBase(type: "text", text: m.group(0))
+        return TokenEscapedText(type: "text", text: m.group(0))
     }
 }
 
@@ -269,7 +262,9 @@ if let dirs = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.Document
     if let text = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil) {
         for token in blockParser.parse(text) {
             inlineParser.links = blockParser.definedLinks
-            inlineParser.parse(&token.text)
+            if token.type == "text" {
+                inlineParser.parse(&token.text)
+            }
             println(token.render())
         }
     }
