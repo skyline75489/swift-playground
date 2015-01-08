@@ -185,8 +185,12 @@ class InlineParser {
     init() {
         // Backslash escape
         addGrammar("escape", regex:Regex(pattern: "^\\\\([\\\\`*{}\\[\\]()#+\\-.!_>~|])")) // \* \+ \! ...
+        addGrammar("autolink", regex: Regex(pattern :"^<([^ >]+(@|:\\/)[^ >]+)>"))
+        addGrammar("url", regex: Regex(pattern :"^(https?:\\/\\/[^\\s<]+[^<.,:;\"\')\\]\\s])"))
         addGrammar("tag", regex: Regex(pattern: "^<!--[\\s\\S]*?-->|^<\\/\\w+>|^<\\w+[^>]*?>")) // html tag
-        addGrammar("ref_links", regex: Regex(pattern: "^!?\\[((?:\\[[^^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*)\\]\\s*\\[([^^\\]]*)\\]"))
+        addGrammar("link", regex: Regex(pattern: "^!?\\[((?:\\[[^^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*)\\]\\(\\s*<?([\\s\\S]*?)>?(?:\\s+[\'\"]([\\s\\S]*?)[\'\"])?\\s*\\)"))
+        addGrammar("reflink", regex: Regex(pattern: "^!?\\[((?:\\[[^^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*)\\]\\s*\\[([^^\\]]*)\\]"))
+        addGrammar("nolink", regex: Regex(pattern: "^!?\\[((?:\\[[^\\]]*\\]|[^\\[\\]])*)\\]"))
         addGrammar("double_emphasis", regex: Regex(pattern: "^_{2}(.+?)_{2}(?!_)|^\\*{2}(.+?)\\*{2}(?!\\*)"))
         addGrammar("emphasis", regex: Regex(pattern: "^\\b_((?:__|.)+?)_\\b|^\\*((?:\\*\\*|.)+?)\\*(?!\\*)"))
         addGrammar("code", regex: Regex(pattern: "^(`+)\\s*(.*?[^`])\\s*\\1(?!`)"))
@@ -219,9 +223,15 @@ class InlineParser {
         switch name {
         case "escape":
             return outputEscape
+        case "autolink":
+            return outputAutoLink
+        case "link":
+            return outputLink
+        case "url":
+            return outputURL
         case "tag":
             return outputTag
-        case "ref_links":
+        case "reflink":
             return outputRefLink
         case "double_emphasis":
             return outputDoubleEmphasis
@@ -258,6 +268,14 @@ class InlineParser {
         return TokenBase(type: "text", text: m.group(1))
     }
     
+    func outputAutoLink(m :RegexMatch) -> TokenBase {
+        let link = m.group(1)
+        var isEmail = false
+        if m.group(2) == "@" {
+           isEmail = true
+        }
+        return AutoLink(link: link, isEmail: isEmail)
+    }
     func outputTag(m: RegexMatch) -> TokenBase {
         var text = m.group(0)
         let lowerText = text.lowercaseString
@@ -270,14 +288,35 @@ class InlineParser {
         return TokenBase(type: "tag", text: text)
     }
     
+    func outputURL(m: RegexMatch) -> TokenBase {
+        let link = m.group(1)
+        if self.inLink {
+            return TokenEscapedText(type: "text", text: link)
+        } else {
+            return AutoLink(link: link, isEmail: false)
+        }
+    }
+    
+    func outputLink(m: RegexMatch) -> TokenBase {
+        return processLink(m, link: m.group(2), title: m.group(3))
+    }
+    
     func outputRefLink(m: RegexMatch) -> TokenBase {
         let key = m.group(2).isEmpty ? m.group(1) : m.group(2)
         if let ret = links[key] {
             // If links[key] exists, the link and title won't be nil
             // We can safely unwrap it
             return processLink(m, link: ret["link"]!, title: ret["title"]!)
+        } else {
+            return TokenNone()
         }
-        else {
+    }
+    
+    func outputNoLink(m: RegexMatch) -> TokenBase {
+        let key = m.group(1)
+        if let ret = self.links[key] {
+            return processLink(m, link: ret["link"]!, title: ret["title"]!)
+        } else {
             return TokenNone()
         }
     }
@@ -288,13 +327,13 @@ class InlineParser {
     }
     
     func outputDoubleEmphasis(m: RegexMatch) -> TokenBase {
-        var text = m.group(1)
+        var text = m.group(2).isEmpty ? m.group(1) : m.group(2)
         self.parse(&text)
         return DoubleEmphasis(text: text)
     }
     
     func outputEmphasis(m: RegexMatch) -> TokenBase {
-        var text = m.group(1)
+        var text = m.group(2).isEmpty ? m.group(1) : m.group(2)
         self.parse(&text)
         return Emphasis(text: text)
     }
