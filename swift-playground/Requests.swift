@@ -9,22 +9,28 @@
 import Foundation
 
 struct Requests {
-    static func get(url: String, payload: [String:String]) -> NSData? {
-        var paraList = [String]()
-        for (key, val) in payload {
-            paraList.append(key + "=" + val)
-        }
-        let payload: String = "&".join(paraList)
-        
+    
+    static func get(url: String) -> NSData?{
+        return self.get(url, payload: nil)
+    }
+    
+    static func get(url: String, payload: [String:String]?) -> NSData? {
         var reqURLString:String = url
-
         
-        // Construct URL
-        if !url.hasSuffix("?") {
-            reqURLString += "?" + payload
-        } else {
-            reqURLString += payload
+        if let payload = payload {
+            var paraList = [String]()
+            for (key, val) in payload {
+                paraList.append(key + "=" + val)
+            }
+            let payload: String = "&".join(paraList)
+            // Construct URL
+            if !url.hasSuffix("?") {
+                reqURLString += "?" + payload
+            } else {
+                reqURLString += payload
+            }
         }
+
         let reqURL = NSURL(string: reqURLString)
         
         var req = NSMutableURLRequest(URL: reqURL!)
