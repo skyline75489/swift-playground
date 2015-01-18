@@ -9,10 +9,7 @@
 /* Begin PBXBuildFile section */
 		2D8C24421A5A855F00219B7A /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C24411A5A855F00219B7A /* Regex.swift */; };
 		2D8C24461A5A913600219B7A /* Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C24451A5A913600219B7A /* Requests.swift */; };
-		2D8C24481A5AAD2C00219B7A /* BlockTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8C24471A5AAD2C00219B7A /* BlockTokens.swift */; };
 		2D8CDE1B1A4A68CC00026590 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8CDE1A1A4A68CC00026590 /* main.swift */; };
-		2D8CDE221A4A7F7100026590 /* json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8CDE211A4A7F7100026590 /* json.swift */; };
-		2D8FCD071A5B78490043D82B /* InlineTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8FCD061A5B78490043D82B /* InlineTokens.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,11 +27,8 @@
 /* Begin PBXFileReference section */
 		2D8C24411A5A855F00219B7A /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		2D8C24451A5A913600219B7A /* Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Requests.swift; sourceTree = "<group>"; };
-		2D8C24471A5AAD2C00219B7A /* BlockTokens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockTokens.swift; sourceTree = "<group>"; };
 		2D8CDE171A4A68CC00026590 /* swift-playground */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "swift-playground"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D8CDE1A1A4A68CC00026590 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		2D8CDE211A4A7F7100026590 /* json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = json.swift; sourceTree = "<group>"; };
-		2D8FCD061A5B78490043D82B /* InlineTokens.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InlineTokens.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,11 +62,8 @@
 			isa = PBXGroup;
 			children = (
 				2D8CDE1A1A4A68CC00026590 /* main.swift */,
-				2D8CDE211A4A7F7100026590 /* json.swift */,
 				2D8C24411A5A855F00219B7A /* Regex.swift */,
 				2D8C24451A5A913600219B7A /* Requests.swift */,
-				2D8C24471A5AAD2C00219B7A /* BlockTokens.swift */,
-				2D8FCD061A5B78490043D82B /* InlineTokens.swift */,
 			);
 			path = "swift-playground";
 			sourceTree = "<group>";
@@ -135,9 +126,6 @@
 			files = (
 				2D8CDE1B1A4A68CC00026590 /* main.swift in Sources */,
 				2D8C24461A5A913600219B7A /* Requests.swift in Sources */,
-				2D8CDE221A4A7F7100026590 /* json.swift in Sources */,
-				2D8C24481A5AAD2C00219B7A /* BlockTokens.swift in Sources */,
-				2D8FCD071A5B78490043D82B /* InlineTokens.swift in Sources */,
 				2D8C24421A5A855F00219B7A /* Regex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -223,6 +211,10 @@
 		2D8CDE1F1A4A68CC00026590 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -230,6 +222,10 @@
 		2D8CDE201A4A68CC00026590 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
