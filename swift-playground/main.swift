@@ -1,16 +1,12 @@
 import Foundation
-// GET Request
 
-let url = "http://httpbin.org/get"
-let para = ["Hello": "World"]
+let s = "{\"C2051\" : [\"JU Yamaguchi\"],\"C2086\" : [\"USS Saitama\"]}"
 
-if let resp = Requests.get(url, payload: para) {
-    let json = JSON(data: resp)
-    println(json)
-}
+let json = JSON(data:s.dataUsingEncoding(NSUTF8StringEncoding)!)
 
-let url2 = "http://www.baidu.com"
-if let resp = Requests.get(url2) {
-    let r = NSString(data: resp, encoding: NSUTF8StringEncoding)
-    println(r)
-}
+
+println(json)
+
+let a = "www.stackoverflow.com"
+println(a.lastIndexOf("."))
+println(a.subString(0, length: 6))
