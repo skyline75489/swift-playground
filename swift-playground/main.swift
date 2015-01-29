@@ -1,12 +1,28 @@
 import Foundation
 
-let s = "{\"C2051\" : [\"JU Yamaguchi\"],\"C2086\" : [\"USS Saitama\"]}"
 
-let json = JSON(data:s.dataUsingEncoding(NSUTF8StringEncoding)!)
+func isValid(s:String) -> Bool {
+    let para_map = ["(":")",
+                    "{":"}",
+                    "[":"]"]
+    var stack = Stack<String>()
+    for ch in s {
+        let top = String(ch)
+        if (stack.count == 0) {
+            stack.push(top)
+            continue
+        }
+        if let p = para_map[stack.top()!] {
+            if (p == top) {
+                stack.pop()
+            } else {
+                stack.push(top)
+            }
+        } else {
+            stack.push(top)
+        }
+    }
+    return stack.count == 0
+}
 
-
-println(json)
-
-let a = "www.stackoverflow.com"
-println(a.lastIndexOf("."))
-println(a.subString(0, length: 6))
+println(isValid("{}[()]"))
