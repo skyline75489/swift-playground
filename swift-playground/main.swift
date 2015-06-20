@@ -1,4 +1,10 @@
 import Foundation
 
-let s = "www.github.com"
-println(s.contains("g"))
+var j:JSON?
+
+if let json = j {
+    let a = json["Hello"]
+}
+
+
+print("Hell");
