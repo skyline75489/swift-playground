@@ -58,3 +58,21 @@ print(a.characters.count)
 print(a.utf16.count)
 print(a.utf8.count)
 print(a.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+
+var i = 10;
+
+repeat {
+    print("Hello")
+    i -= 1
+} while( i > 0)
+
+i = 10;
+
+while( i > 0) {
+    print("World")
+    i -= 1
+}
+
+for(var j = 0; j < 10; j++) {
+    print("Swift")
+}
