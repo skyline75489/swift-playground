@@ -29,7 +29,8 @@ var albums = [
     Album(name: "My Everything", artist: "Ariana Grande"),
     Album(name: "Yours Truly", artist: "Ariana Grande"),
     Album(name: "Ocean Eyes", artist: "Owl City"),
-    Album(name: "Maybe I'm Dreaming", artist: "Owl City")
+    Album(name: "Maybe I'm Dreaming", artist: "Owl City"),
+    Album(name: "The Hunting Party", artist: "Linkin Park")
 ]
 
 func getAlbumsOfArtist(list: [Album], artist: String) -> [Album] {
@@ -48,6 +49,12 @@ func dumpJSON(list: [Album]) -> JSON {
     return JSON(arr);
 }
 
-let owlCity = getAlbumsOfArtist(albums, artist: "Linkin Park")
+let owlCity = getAlbumsOfArtist(albums, artist: "Owl City")
 print(owlCity);
 print(dumpJSON(albums))
+
+let a = "Héllo, 🇺🇸laygr😮und!"
+print(a.characters.count)
+print(a.utf16.count)
+print(a.utf8.count)
+print(a.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
