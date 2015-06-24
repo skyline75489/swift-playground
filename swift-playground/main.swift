@@ -1,25 +1,5 @@
 import Foundation
 
-class Album {
-    var name: String
-    var artist: String
-    init(name: String, artist: String) {
-        self.name = name;
-        self.artist = artist;
-    }
-}
-
-extension Album: CustomDebugStringConvertible {
-    internal var debugDescription: String {
-        return "[\(artist): \(name)]"
-    }
-}
-
-extension Album: CustomStringConvertible {
-    var description: String {
-        return "\(artist) - \(name)"
-    }
-}
 
 var albums = [
     Album(name: "A Thousand Suns", artist: "Linkin Park"),
@@ -58,33 +38,8 @@ func dumpJSON(list: [Album]) -> JSON {
     return JSON(arr);
 }
 
-let owlCity = getAlbumsOfArtist(albums, artist: "Owl City")
-print(owlCity);
-
-let ariana = searchAlbumOfArtist(albums, artist: "Ariana")
-print(ariana)
 print(dumpJSON(albums))
 
-let a = "Héllo, 🇺🇸laygr😮und!"
-print(a.characters.count)
-print(a.utf16.count)
-print(a.utf8.count)
-print(a.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
-
-var i = 10;
-
-repeat {
-    print("Hello")
-    i -= 1 // -- i , i -- both not working?
-} while( i > 0)
-
-i = 10;
-
-while( i > 0) {
-    print("World")
-    i -= 1
-}
-
-for(var j = 0; j < 10; j++) {
-    print("Swift")
+if let r = Requests.post("http://localhost:5000/folders", payload: ["query": "info"]) {
+    print(JSON(data: r))
 }

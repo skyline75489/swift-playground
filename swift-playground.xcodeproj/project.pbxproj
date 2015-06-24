@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2D8CDE1B1A4A68CC00026590 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8CDE1A1A4A68CC00026590 /* main.swift */; };
+		2D9789541B3A852200E86673 /* Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9789531B3A852200E86673 /* Requests.swift */; };
+		2D9789561B3A853400E86673 /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9789551B3A853400E86673 /* Album.swift */; };
 		2DF243F81B359CF50094E463 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF243F71B359CF50094E463 /* SwiftyJSON.swift */; };
 /* End PBXBuildFile section */
 
@@ -26,6 +28,8 @@
 /* Begin PBXFileReference section */
 		2D8CDE171A4A68CC00026590 /* swift-playground */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "swift-playground"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D8CDE1A1A4A68CC00026590 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		2D9789531B3A852200E86673 /* Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Requests.swift; sourceTree = "<group>"; };
+		2D9789551B3A853400E86673 /* Album.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
 		2DF243F71B359CF50094E463 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -61,6 +65,8 @@
 			children = (
 				2DF243F61B359CB90094E463 /* Libraries */,
 				2D8CDE1A1A4A68CC00026590 /* main.swift */,
+				2D9789531B3A852200E86673 /* Requests.swift */,
+				2D9789551B3A853400E86673 /* Album.swift */,
 			);
 			path = "swift-playground";
 			sourceTree = "<group>";
@@ -130,8 +136,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D9789541B3A852200E86673 /* Requests.swift in Sources */,
 				2D8CDE1B1A4A68CC00026590 /* main.swift in Sources */,
 				2DF243F81B359CF50094E463 /* SwiftyJSON.swift in Sources */,
+				2D9789561B3A853400E86673 /* Album.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
