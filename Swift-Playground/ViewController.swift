@@ -13,24 +13,27 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        Alamofire.request(.GET, "https://httpbin.org/get")
-            .responseJSON { _, _, result in
-                print(result)
-                debugPrint(result)
+        let router = SwiftRouter.sharedInstance
                 
-                print("Parsed JSON: \(result.value)")
+        router.map("/front", controllerClass: FrontPageViewController.self)
+        router.map("/detail", controllerClass: DetailViewController.self)
+        
+        
+        router.map("/func", handler: { (param: [String:String]?) -> (Bool)  in
+            print("In Closure")
+            return true
+        });
+        
+    
+        if let v1 = router.matchController("/front") {
+            print(v1)
+        }
+        
+        if let v2 = router.matchHandler("/func") {
+            let r = v2(nil)
+            print(r)
         }
 
-        
-        Alamofire.request(.GET, "https://httpbin.org/get")
-            .responseString { _, _, result in
-                print("Response String: \(result.value)")
-            }
-            .responseJSON { _, _, result in
-                print("Response JSON: \(result.value)")
-        }
-        
         // Do any additional setup after loading the view, typically from a nib.
     }
 

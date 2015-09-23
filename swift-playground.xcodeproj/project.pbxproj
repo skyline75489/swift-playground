@@ -15,6 +15,9 @@
 		2D654FE11BB1670C00B96267 /* Swift_PlaygroundUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D654FE01BB1670C00B96267 /* Swift_PlaygroundUITests.swift */; };
 		2D654FF01BB1674700B96267 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D654FEE1BB1674700B96267 /* Alamofire.framework */; };
 		2D654FF11BB1674700B96267 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D654FEF1BB1674700B96267 /* SwiftyJSON.framework */; };
+		2DA6AEA11BB2B47E00CF0E65 /* SwiftRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA01BB2B47E00CF0E65 /* SwiftRouter.swift */; settings = {ASSET_TAGS = (); }; };
+		2DA6AEA31BB2E85B00CF0E65 /* FrontPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA21BB2E85B00CF0E65 /* FrontPageViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		2DA6AEA51BB2E88500CF0E65 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA41BB2E88500CF0E65 /* DetailViewController.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +52,9 @@
 		2D654FE21BB1670C00B96267 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D654FEE1BB1674700B96267 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		2D654FEF1BB1674700B96267 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
+		2DA6AEA01BB2B47E00CF0E65 /* SwiftRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRouter.swift; sourceTree = "<group>"; };
+		2DA6AEA21BB2E85B00CF0E65 /* FrontPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrontPageViewController.swift; sourceTree = "<group>"; };
+		2DA6AEA41BB2E88500CF0E65 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +113,9 @@
 				2D654FC71BB1670C00B96267 /* Assets.xcassets */,
 				2D654FC91BB1670C00B96267 /* LaunchScreen.storyboard */,
 				2D654FCC1BB1670C00B96267 /* Info.plist */,
+				2DA6AEA01BB2B47E00CF0E65 /* SwiftRouter.swift */,
+				2DA6AEA21BB2E85B00CF0E65 /* FrontPageViewController.swift */,
+				2DA6AEA41BB2E88500CF0E65 /* DetailViewController.swift */,
 			);
 			path = "Swift-Playground";
 			sourceTree = "<group>";
@@ -286,6 +295,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DA6AEA11BB2B47E00CF0E65 /* SwiftRouter.swift in Sources */,
+				2DA6AEA31BB2E85B00CF0E65 /* FrontPageViewController.swift in Sources */,
+				2DA6AEA51BB2E88500CF0E65 /* DetailViewController.swift in Sources */,
 				2D654FC31BB1670C00B96267 /* ViewController.swift in Sources */,
 				2D654FC11BB1670C00B96267 /* AppDelegate.swift in Sources */,
 			);
