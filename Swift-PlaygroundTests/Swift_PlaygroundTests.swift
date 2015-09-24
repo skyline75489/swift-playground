@@ -30,13 +30,26 @@ class Swift_PlaygroundTests: XCTestCase {
         XCTAssertTrue(router.matchController("/story/2")!.isKindOfClass( StoryViewController.self))
         XCTAssertTrue(router.matchController("/user/2/story")!.isKindOfClass( StoryListViewController.self))
         
+        let vc = router.matchController("/user/1?username=hello&password=123")!
+        XCTAssertEqual(vc.userId, "1")
+        XCTAssertEqual(vc.username, "hello")
+        XCTAssertEqual(vc.password, "123")
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock {
-            // Put the code you want to measure the time of here.
-        }
+    func testRouteHandler() {
+        let router = SwiftRouter.sharedInstance
+        router.map("/user/add", handler: { (params:[String: String]?) -> (Bool) in
+            XCTAssertNotNil(params)
+            if let params = params {
+                XCTAssertEqual(params["username"], "hello")
+                XCTAssertEqual(params["password"], "123")
+            }
+            return true
+        })
+        
+        let handler = router.matchHandler("/user/add")
+        XCTAssertNotNil(handler)
+        
+        router.routeURL("/user/add?username=hello&password=123")
     }
-    
 }

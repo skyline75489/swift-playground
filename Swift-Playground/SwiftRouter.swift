@@ -58,17 +58,19 @@ class SwiftRouter {
             }
             subRoutes[pathComponent] = NSMutableDictionary()
         }
+        // recursive
         self.insertRoute(pathComponents, entry: entry, subRoutes: subRoutes[pathComponent] as! NSMutableDictionary, index: index+1)
     }
     
     func matchController(route: String) -> AnyObject? {
-        var params = [String:String]()
-        if let entry = self.findRouteEntry(route, params: &params) {
-            let name = NSStringFromClass(entry.klass!)
-            let clz = NSClassFromString(name) as! NSObject.Type
-            let instance = clz.init()
-            instance.setValuesForKeysWithDictionary(params)
-            return instance
+        if var params = self.paramsInRoute(route) {
+            if let entry = self.findRouteEntry(route, params: &params) {
+                let name = NSStringFromClass(entry.klass!)
+                let clz = NSClassFromString(name) as! NSObject.Type
+                let instance = clz.init()
+                instance.setValuesForKeysWithDictionary(params)
+                return instance
+            }
         }
         return nil;
     }
@@ -87,6 +89,16 @@ class SwiftRouter {
         var subRoutes = self.routeMap
         for pathComponent in pathComponents {
             for (k, v) in subRoutes {
+                // match handler first
+                if subRoutes[pathComponent] != nil {
+                    if pathComponent == pathComponents.last {
+                        let d = subRoutes[pathComponent] as! NSMutableDictionary
+                        let entry = d["_entry"] as! RouteEntry
+                        return entry
+                    }
+                    subRoutes = subRoutes[pathComponent] as! NSMutableDictionary
+                    break
+                }
                 if k.hasPrefix(":") {
                     let s = String(k)
                     let key = s.substringFromIndex(s.startIndex.advancedBy(1))
@@ -95,15 +107,6 @@ class SwiftRouter {
                         return v[kRouteEntryKey] as? RouteEntry
                     }
                     subRoutes = subRoutes[s] as! NSMutableDictionary
-                    break
-                }
-                if subRoutes[pathComponent] != nil {
-                    if pathComponent == pathComponents.last {
-                        let d = subRoutes[pathComponent] as! NSMutableDictionary
-                        let entry = d["_entry"] as! RouteEntry
-                        return entry
-                    }
-                    subRoutes = subRoutes[pathComponent] as! NSMutableDictionary
                     break
                 }
             }

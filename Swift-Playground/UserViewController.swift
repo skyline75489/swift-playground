@@ -11,4 +11,6 @@ import UIKit
 
 class UserViewController: UIViewController {
     var userId:String?
+    var username:String?
+    var password:String?
 }
