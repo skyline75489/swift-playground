@@ -19,7 +19,7 @@ class ViewController: UIViewController {
         router.map("/detail", controllerClass: DetailViewController.self)
         
         
-        router.map("/func", handler: { (params: [String:String]?) -> (Bool)  in
+        router.map("/func/:username", handler: { (params: [String:String]?) -> (Bool)  in
             print("In Closure")
             print(params)
             return true
@@ -33,7 +33,7 @@ class ViewController: UIViewController {
             print(v2)
         }
         
-        router.routeURL("/func?username=hello&sdfdsf=12")
+        router.routeURL("/func/skyline/?password=hello&sdfdsf=12")
 
         // Do any additional setup after loading the view, typically from a nib.
     }

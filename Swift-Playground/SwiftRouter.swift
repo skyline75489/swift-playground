@@ -22,7 +22,7 @@ class RouteEntry {
 
 class SwiftRouter {
     static let sharedInstance = SwiftRouter()
-    private var routeMap = [String:AnyObject]()
+    private var routeMap = NSMutableDictionary()
     
     
     func map(route: String, controllerClass: AnyClass) {
@@ -30,9 +30,7 @@ class SwiftRouter {
     }
     
     func map(route: String, handler:([String:String]?) -> (Bool)) {
-        let pathComponents = self.pathComponentsInRoute(route)
-        let _route = pathComponents.joinWithSeparator("")
-        self.doMap(_route, handler: handler)
+        self.doMap(route, handler: handler)
     }
     
     func doMap(route: String, cls: AnyClass?=nil, handler:(([String:String]?) -> (Bool))?=nil) -> Void {
@@ -46,50 +44,62 @@ class SwiftRouter {
             r = RouteEntry(pattern: route, handler: handler)
         }
         let pathComponents = self.pathComponentsInRoute(route)
-        for pathComponent in pathComponents {
-            let r = self.insertRoute(pathComponent, pathComponents: pathComponents, entry: r, subRoutes: &self.routeMap)
-            if r == nil {
-                break
-            }
-        }
+        self.insertRoute(pathComponents, entry: r, subRoutes: self.routeMap)
     }
+
+    func insertRoute(pathComponents: [String], entry: RouteEntry, subRoutes: NSMutableDictionary, startIndex: Int = 0){
     
-    func insertRoute(pathComponent: String, pathComponents: [String], entry: RouteEntry, inout subRoutes: [String:AnyObject]) -> [String:AnyObject]?{
+        let pathComponent = pathComponents[startIndex]
         if subRoutes[pathComponent] == nil {
             if pathComponent == pathComponents.last {
                 subRoutes[pathComponent] = entry
-                return nil
+                return
             }
-            subRoutes[pathComponent] = [String: AnyObject]()
+            subRoutes[pathComponent] = NSMutableDictionary()
         }
-        return subRoutes[pathComponent] as! [String: AnyObject]
+        self.insertRoute(pathComponents, entry: entry, subRoutes: subRoutes[pathComponent] as! NSMutableDictionary, startIndex: startIndex+1)
     }
     
     func matchController(route: String) -> AnyClass? {
-        if let entry = self.findRouteEntry(route) {
+        var a = [String:String]()
+        if let entry = self.findRouteEntry(route, params: &a) {
             return entry.klass
         }
         return nil;
     }
     
     func matchHandler(route: String) -> (([String:String]?) -> (Bool))? {
-        if let entry = self.findRouteEntry(route) {
+        var a = [String:String]()
+        if let entry = self.findRouteEntry(route, params: &a) {
             return entry.handler
         }
         return nil
     }
     
-    func findRouteEntry(route: String) -> RouteEntry? {
+    func findRouteEntry(route: String, inout params:[String:String]) -> RouteEntry? {
         let pathComponents = self.pathComponentsInRoute(route)
         
         var subRoutes = self.routeMap
         for pathComponent in pathComponents {
-            if subRoutes[pathComponent] != nil {
-                if pathComponent == pathComponents.last {
-                    let entry = subRoutes[pathComponent] as! RouteEntry
-                    return entry
+            for (k, v) in subRoutes {
+                if k.hasPrefix(":") {
+                    let s = String(k)
+                    let key = s.substringFromIndex(s.startIndex.advancedBy(1))
+                    params[key] = pathComponent
+                    if pathComponent == pathComponents.last {
+                        return v as? RouteEntry
+                    }
+                    subRoutes = subRoutes[s] as! NSMutableDictionary
+                    break
                 }
-                subRoutes = subRoutes[pathComponent] as! [String: AnyObject]
+                if subRoutes[pathComponent] != nil {
+                    if pathComponent == pathComponents.last {
+                        let entry = subRoutes[pathComponent] as! RouteEntry
+                        return entry
+                    }
+                    subRoutes = subRoutes[pathComponent] as! NSMutableDictionary
+                    break
+                }
             }
         }
         return nil
@@ -98,6 +108,8 @@ class SwiftRouter {
     func paramsInRoute(route: String) -> [String: String]? {
 
         var params = [String:String]()
+        self.findRouteEntry(route, params: &params)
+        
         if  let loc = route.rangeOfString("?") {
             let paramsString = route.substringFromIndex(loc.startIndex.advancedBy(1))
             let paramArray = paramsString.componentsSeparatedByString("&")
