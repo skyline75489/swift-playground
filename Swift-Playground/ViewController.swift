@@ -19,8 +19,9 @@ class ViewController: UIViewController {
         router.map("/detail", controllerClass: DetailViewController.self)
         
         
-        router.map("/func", handler: { (param: [String:String]?) -> (Bool)  in
+        router.map("/func", handler: { (params: [String:String]?) -> (Bool)  in
             print("In Closure")
+            print(params)
             return true
         });
         
@@ -28,11 +29,11 @@ class ViewController: UIViewController {
         if let v1 = router.matchController("/front") {
             print(v1)
         }
-        
-        if let v2 = router.matchHandler("/func") {
-            let r = v2(nil)
-            print(r)
+        if let v2 = router.matchController("/detail") {
+            print(v2)
         }
+        
+        router.routeURL("/func?username=hello&sdfdsf=12")
 
         // Do any additional setup after loading the view, typically from a nib.
     }
