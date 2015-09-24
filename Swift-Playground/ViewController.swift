@@ -14,9 +14,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let router = SwiftRouter.sharedInstance
-                
+           /*
         router.map("/front", controllerClass: FrontPageViewController.self)
         router.map("/detail", controllerClass: DetailViewController.self)
+        router.map("/user/:userId", controllerClass: UserViewController.self)
+        router.map("/story/:storyId", controllerClass: StoryViewController.self)
+        router.map("/user/:userId/story", controllerClass: StoryListViewController.self)
         
         
         router.map("/func/:username", handler: { (params: [String:String]?) -> (Bool)  in
@@ -33,8 +36,12 @@ class ViewController: UIViewController {
             print(v2)
         }
         
+        if let v3 = router.matchController("/user/2/story") {
+            print(v3)
+        }
+        
         router.routeURL("/func/skyline/?password=hello&sdfdsf=12")
-
+*/
         // Do any additional setup after loading the view, typically from a nib.
     }
 

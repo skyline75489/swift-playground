@@ -8,6 +8,7 @@
 
 import Foundation
 
+
 class RouteEntry {
     var pattern: String? = nil
     var handler: (([String:String]?) -> Bool)? = nil
@@ -22,6 +23,9 @@ class RouteEntry {
 
 class SwiftRouter {
     static let sharedInstance = SwiftRouter()
+    
+    let kRouteEntryKey = "_entry"
+    
     private var routeMap = NSMutableDictionary()
     
     
@@ -34,9 +38,6 @@ class SwiftRouter {
     }
     
     func doMap(route: String, cls: AnyClass?=nil, handler:(([String:String]?) -> (Bool))?=nil) -> Void {
-        guard self.routeMap[route] == nil else {
-            return
-        }
         var r = RouteEntry(pattern: "/", cls: nil)
         if let k = cls {
             r = RouteEntry(pattern: route, cls: k)
@@ -47,23 +48,27 @@ class SwiftRouter {
         self.insertRoute(pathComponents, entry: r, subRoutes: self.routeMap)
     }
 
-    func insertRoute(pathComponents: [String], entry: RouteEntry, subRoutes: NSMutableDictionary, startIndex: Int = 0){
+    func insertRoute(pathComponents: [String], entry: RouteEntry, subRoutes: NSMutableDictionary, index: Int = 0){
     
-        let pathComponent = pathComponents[startIndex]
+        let pathComponent = pathComponents[index]
         if subRoutes[pathComponent] == nil {
             if pathComponent == pathComponents.last {
-                subRoutes[pathComponent] = entry
+                subRoutes[pathComponent] = NSMutableDictionary(dictionary: [kRouteEntryKey: entry])
                 return
             }
             subRoutes[pathComponent] = NSMutableDictionary()
         }
-        self.insertRoute(pathComponents, entry: entry, subRoutes: subRoutes[pathComponent] as! NSMutableDictionary, startIndex: startIndex+1)
+        self.insertRoute(pathComponents, entry: entry, subRoutes: subRoutes[pathComponent] as! NSMutableDictionary, index: index+1)
     }
     
-    func matchController(route: String) -> AnyClass? {
-        var a = [String:String]()
-        if let entry = self.findRouteEntry(route, params: &a) {
-            return entry.klass
+    func matchController(route: String) -> AnyObject? {
+        var params = [String:String]()
+        if let entry = self.findRouteEntry(route, params: &params) {
+            let name = NSStringFromClass(entry.klass!)
+            let clz = NSClassFromString(name) as! NSObject.Type
+            let instance = clz.init()
+            instance.setValuesForKeysWithDictionary(params)
+            return instance
         }
         return nil;
     }
@@ -87,14 +92,15 @@ class SwiftRouter {
                     let key = s.substringFromIndex(s.startIndex.advancedBy(1))
                     params[key] = pathComponent
                     if pathComponent == pathComponents.last {
-                        return v as? RouteEntry
+                        return v[kRouteEntryKey] as? RouteEntry
                     }
                     subRoutes = subRoutes[s] as! NSMutableDictionary
                     break
                 }
                 if subRoutes[pathComponent] != nil {
                     if pathComponent == pathComponents.last {
-                        let entry = subRoutes[pathComponent] as! RouteEntry
+                        let d = subRoutes[pathComponent] as! NSMutableDictionary
+                        let entry = d["_entry"] as! RouteEntry
                         return entry
                     }
                     subRoutes = subRoutes[pathComponent] as! NSMutableDictionary
