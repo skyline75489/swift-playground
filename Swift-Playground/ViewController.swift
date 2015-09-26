@@ -8,41 +8,14 @@
 
 import UIKit
 import Alamofire
+import SwiftRouter
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let router = SwiftRouter.sharedInstance
-           /*
-        router.map("/front", controllerClass: FrontPageViewController.self)
-        router.map("/detail", controllerClass: DetailViewController.self)
-        router.map("/user/:userId", controllerClass: UserViewController.self)
-        router.map("/story/:storyId", controllerClass: StoryViewController.self)
-        router.map("/user/:userId/story", controllerClass: StoryListViewController.self)
+        let router = Router.sharedInstance
         
-        
-        router.map("/func/:username", handler: { (params: [String:String]?) -> (Bool)  in
-            print("In Closure")
-            print(params)
-            return true
-        });
-        
-    
-        if let v1 = router.matchController("/front") {
-            print(v1)
-        }
-        if let v2 = router.matchController("/detail") {
-            print(v2)
-        }
-        
-        if let v3 = router.matchController("/user/2/story") {
-            print(v3)
-        }
-        
-        router.routeURL("/func/skyline/?password=hello&sdfdsf=12")
-*/
-        // Do any additional setup after loading the view, typically from a nib.
     }
 
     override func didReceiveMemoryWarning() {

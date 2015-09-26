@@ -15,12 +15,9 @@
 		2D654FE11BB1670C00B96267 /* Swift_PlaygroundUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D654FE01BB1670C00B96267 /* Swift_PlaygroundUITests.swift */; };
 		2D654FF01BB1674700B96267 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D654FEE1BB1674700B96267 /* Alamofire.framework */; };
 		2D654FF11BB1674700B96267 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D654FEF1BB1674700B96267 /* SwiftyJSON.framework */; };
-		2DA6AEA11BB2B47E00CF0E65 /* SwiftRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA01BB2B47E00CF0E65 /* SwiftRouter.swift */; settings = {ASSET_TAGS = (); }; };
+		2DA321C71BB419F6002C51BD /* SwiftRouter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DA321C61BB419F6002C51BD /* SwiftRouter.framework */; };
 		2DA6AEA31BB2E85B00CF0E65 /* FrontPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA21BB2E85B00CF0E65 /* FrontPageViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		2DA6AEA51BB2E88500CF0E65 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA41BB2E88500CF0E65 /* DetailViewController.swift */; settings = {ASSET_TAGS = (); }; };
-		2DEC4ED21BB3C6D700F716C4 /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEC4ED11BB3C6D700F716C4 /* StoryViewController.swift */; settings = {ASSET_TAGS = (); }; };
-		2DEC4ED41BB3C6E400F716C4 /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEC4ED31BB3C6E400F716C4 /* UserViewController.swift */; settings = {ASSET_TAGS = (); }; };
-		2DEC4ED61BB3C6F500F716C4 /* StoryListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEC4ED51BB3C6F500F716C4 /* StoryListViewController.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,12 +52,9 @@
 		2D654FE21BB1670C00B96267 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D654FEE1BB1674700B96267 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		2D654FEF1BB1674700B96267 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
-		2DA6AEA01BB2B47E00CF0E65 /* SwiftRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRouter.swift; sourceTree = "<group>"; };
+		2DA321C61BB419F6002C51BD /* SwiftRouter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftRouter.framework; path = Carthage/Build/iOS/SwiftRouter.framework; sourceTree = "<group>"; };
 		2DA6AEA21BB2E85B00CF0E65 /* FrontPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrontPageViewController.swift; sourceTree = "<group>"; };
 		2DA6AEA41BB2E88500CF0E65 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
-		2DEC4ED11BB3C6D700F716C4 /* StoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryViewController.swift; sourceTree = "<group>"; };
-		2DEC4ED31BB3C6E400F716C4 /* UserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
-		2DEC4ED51BB3C6F500F716C4 /* StoryListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryListViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DA321C71BB419F6002C51BD /* SwiftRouter.framework in Frameworks */,
 				2D654FF01BB1674700B96267 /* Alamofire.framework in Frameworks */,
 				2D654FF11BB1674700B96267 /* SwiftyJSON.framework in Frameworks */,
 			);
@@ -119,12 +114,8 @@
 				2D654FC71BB1670C00B96267 /* Assets.xcassets */,
 				2D654FC91BB1670C00B96267 /* LaunchScreen.storyboard */,
 				2D654FCC1BB1670C00B96267 /* Info.plist */,
-				2DA6AEA01BB2B47E00CF0E65 /* SwiftRouter.swift */,
 				2DA6AEA21BB2E85B00CF0E65 /* FrontPageViewController.swift */,
 				2DA6AEA41BB2E88500CF0E65 /* DetailViewController.swift */,
-				2DEC4ED11BB3C6D700F716C4 /* StoryViewController.swift */,
-				2DEC4ED31BB3C6E400F716C4 /* UserViewController.swift */,
-				2DEC4ED51BB3C6F500F716C4 /* StoryListViewController.swift */,
 			);
 			path = "Swift-Playground";
 			sourceTree = "<group>";
@@ -150,6 +141,7 @@
 		2D654FF31BB16A2800B96267 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2DA321C61BB419F6002C51BD /* SwiftRouter.framework */,
 				2D654FEE1BB1674700B96267 /* Alamofire.framework */,
 				2D654FEF1BB1674700B96267 /* SwiftyJSON.framework */,
 			);
@@ -290,6 +282,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftRouter.framework",
 			);
 			outputPaths = (
 			);
@@ -304,11 +297,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DEC4ED41BB3C6E400F716C4 /* UserViewController.swift in Sources */,
-				2DEC4ED21BB3C6D700F716C4 /* StoryViewController.swift in Sources */,
-				2DA6AEA11BB2B47E00CF0E65 /* SwiftRouter.swift in Sources */,
 				2DA6AEA31BB2E85B00CF0E65 /* FrontPageViewController.swift in Sources */,
-				2DEC4ED61BB3C6F500F716C4 /* StoryListViewController.swift in Sources */,
 				2DA6AEA51BB2E88500CF0E65 /* DetailViewController.swift in Sources */,
 				2D654FC31BB1670C00B96267 /* ViewController.swift in Sources */,
 				2D654FC11BB1670C00B96267 /* AppDelegate.swift in Sources */,
@@ -445,7 +434,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Carthage/build/iOS";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/Carthage/build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "Swift-Playground/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.edu.hit.www.Swift-Playground";
@@ -457,7 +449,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Carthage/build/iOS";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/Carthage/build/iOS",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "Swift-Playground/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.edu.hit.www.Swift-Playground";
