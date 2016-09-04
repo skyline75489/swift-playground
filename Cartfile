@@ -1,3 +1,2 @@
-github "Alamofire/Alamofire" ~> 2.0
-github "SwiftyJSON/SwiftyJSON"
-github "skyline75489/SwiftRouter"
+github "Alamofire/Alamofire" "swift3"
+github "SwiftyJSON/SwiftyJSON" "swift3"

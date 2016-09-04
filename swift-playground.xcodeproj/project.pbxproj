@@ -13,11 +13,8 @@
 		2D654FCB1BB1670C00B96267 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2D654FC91BB1670C00B96267 /* LaunchScreen.storyboard */; };
 		2D654FD61BB1670C00B96267 /* Swift_PlaygroundTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D654FD51BB1670C00B96267 /* Swift_PlaygroundTests.swift */; };
 		2D654FE11BB1670C00B96267 /* Swift_PlaygroundUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D654FE01BB1670C00B96267 /* Swift_PlaygroundUITests.swift */; };
-		2D654FF01BB1674700B96267 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D654FEE1BB1674700B96267 /* Alamofire.framework */; };
-		2D654FF11BB1674700B96267 /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D654FEF1BB1674700B96267 /* SwiftyJSON.framework */; };
-		2DA321C71BB419F6002C51BD /* SwiftRouter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DA321C61BB419F6002C51BD /* SwiftRouter.framework */; };
-		2DA6AEA31BB2E85B00CF0E65 /* FrontPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA21BB2E85B00CF0E65 /* FrontPageViewController.swift */; settings = {ASSET_TAGS = (); }; };
-		2DA6AEA51BB2E88500CF0E65 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA41BB2E88500CF0E65 /* DetailViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		2DA6AEA31BB2E85B00CF0E65 /* FrontPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA21BB2E85B00CF0E65 /* FrontPageViewController.swift */; };
+		2DA6AEA51BB2E88500CF0E65 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6AEA41BB2E88500CF0E65 /* DetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,9 +59,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DA321C71BB419F6002C51BD /* SwiftRouter.framework in Frameworks */,
-				2D654FF01BB1674700B96267 /* Alamofire.framework in Frameworks */,
-				2D654FF11BB1674700B96267 /* SwiftyJSON.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,18 +210,21 @@
 				TargetAttributes = {
 					2D654FBC1BB1670C00B96267 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0800;
 					};
 					2D654FD01BB1670C00B96267 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0800;
 						TestTargetID = 2D654FBC1BB1670C00B96267;
 					};
 					2D654FDB1BB1670C00B96267 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0800;
 						TestTargetID = 2D654FBC1BB1670C00B96267;
 					};
 				};
 			};
-			buildConfigurationList = 2D654FB81BB1670C00B96267 /* Build configuration list for PBXProject "Swift-Playground" */;
+			buildConfigurationList = 2D654FB81BB1670C00B96267 /* Build configuration list for PBXProject "swift-playground" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -442,6 +439,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.edu.hit.www.Swift-Playground";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -457,6 +455,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.edu.hit.www.Swift-Playground";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -468,6 +467,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.edu.hit.www.Swift-PlaygroundTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Swift-Playground.app/Swift-Playground";
 			};
 			name = Debug;
@@ -480,6 +480,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.edu.hit.www.Swift-PlaygroundTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Swift-Playground.app/Swift-Playground";
 			};
 			name = Release;
@@ -491,6 +492,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.edu.hit.www.Swift-PlaygroundUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = "Swift-Playground";
 				USES_XCTRUNNER = YES;
 			};
@@ -503,6 +505,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "cn.edu.hit.www.Swift-PlaygroundUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = "Swift-Playground";
 				USES_XCTRUNNER = YES;
 			};
@@ -511,7 +514,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2D654FB81BB1670C00B96267 /* Build configuration list for PBXProject "Swift-Playground" */ = {
+		2D654FB81BB1670C00B96267 /* Build configuration list for PBXProject "swift-playground" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2D654FE31BB1670C00B96267 /* Debug */,

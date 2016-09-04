@@ -7,15 +7,11 @@
 //
 
 import UIKit
-import Alamofire
-import SwiftRouter
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let router = Router.sharedInstance
-        
     }
 
     override func didReceiveMemoryWarning() {
