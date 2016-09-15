@@ -1,0 +1,5 @@
+version: "Apple Swift version 3.0 (swiftlang-800.0.46.2 clang-800.0.38)"
+options: "84f9a56d9203cd8331c6ba91d1cad321"
+build_time: [527254567, 36498000]
+inputs:
+  "/Users/skyline/Projects/Github/swift-playground/Sources/swift_playground.swift": [527254517, 0]

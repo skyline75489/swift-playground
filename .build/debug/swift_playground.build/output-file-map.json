@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/skyline/Projects/Github/swift-playground/.build/debug/swift_playground.build/master.swiftdeps"
+  },
+  "/Users/skyline/Projects/Github/swift-playground/Sources/swift_playground.swift": {
+    "dependencies": "/Users/skyline/Projects/Github/swift-playground/.build/debug/swift_playground.build/swift_playground.d",
+    "object": "/Users/skyline/Projects/Github/swift-playground/.build/debug/swift_playground.build/swift_playground.swift.o",
+    "swiftmodule": "/Users/skyline/Projects/Github/swift-playground/.build/debug/swift_playground.build/swift_playground~partial.swiftmodule",
+    "swift-dependencies": "/Users/skyline/Projects/Github/swift-playground/.build/debug/swift_playground.build/swift_playground.swiftdeps"
+  }
+}
