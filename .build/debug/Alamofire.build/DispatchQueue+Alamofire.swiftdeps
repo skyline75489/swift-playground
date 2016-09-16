@@ -11,11 +11,11 @@ provides-member:
 - ["CSo13DispatchQueue", "syncResult"]
 provides-dynamic-lookup:
 depends-top-level:
-- "Void"
-- "DispatchQueue"
-- !private "AssignmentPrecedence"
-- !private "+"
 - "TimeInterval"
+- "DispatchQueue"
+- !private "+"
+- !private "AssignmentPrecedence"
+- "Void"
 depends-member:
 - !private ["Ps9AnyObject", "DispatchQueue"]
 - !private ["Ps9AnyObject", "asyncAfter"]
